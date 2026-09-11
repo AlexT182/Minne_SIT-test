@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cẩm Nang Vận Hành Bán Hàng Đa Kênh & Kịch Bản Tự Test Thực Chiến • Odoo 19 & Minne AI Hub (v0.4.0)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        minne: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7e22ce',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -2px rgba(0, 0, 0, 0.02); }
+        .step-completed { border-color: #10b981 !important; background-color: #f0fdf4 !important; }
+        .step-completed .badge-step { background-color: #10b981 !important; color: white !important; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <!-- TOP STICKY BAR -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-500/20">
+                    🏢
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-sm sm:text-base leading-tight flex items-center gap-2">
+                        <span>Cẩm Nang Vận Hành Thực Chiến • Odoo 19 ↔ Minne AI Hub</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-bold">v0.4.0 Omnichannel</span>
+                    </h1>
+                    <p class="text-xs text-slate-500">Kịch bản tự test 10 ca thực tế như một đơn vị kinh doanh vận hành thật</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="index.html" class="hidden sm:inline-flex text-xs font-semibold text-slate-600 hover:text-blue-600 transition">
+                    &larr; QA Portal
+                </a>
+                <a href="KE-HOACH-KINH-DOANH-VA-GTM-ODOO-MINNE.html" class="hidden md:inline-flex text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                    📈 Kế Hoạch GTM
+                </a>
+                <a href="BAO-CAO-KIEM-THU-OMNICHANNEL-VA-AI-CHATBOT.html" class="hidden md:inline-flex text-xs font-bold px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition shadow-sm">
+                    ⚡ Báo Cáo SIT Omnichannel
+                </a>
+                <span id="progressBadge" class="text-xs font-mono font-bold px-3 py-1.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                    Tiến độ: 0/10 Ca (0%)
+                </span>
+                <button onclick="resetProgress()" class="text-xs text-slate-400 hover:text-red-500 transition px-2 py-1" title="Làm mới tiến độ test">
+                    ↻ Reset
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+        <!-- INTRO HERO & ENTERPRISE CONTEXT -->
+        <section class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-3xl p-8 sm:p-10 text-white shadow-2xl relative overflow-hidden">
+            <div class="max-w-4xl space-y-3 relative z-10">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 text-amber-300 text-xs font-mono font-bold">
+                    <span>🏢 ĐƠN VỊ MẪU: CÔNG TY CỔ PHẦN CÔNG NGHỆ BÁN LẺ ALPHATECH POS</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+                    Hành Trình Một Ngày Kinh Doanh Thực Tế (A Day In The Retail Life)
+                </h2>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Tài liệu này được thiết kế chuẩn mực như một bộ <strong>Standard Operating Procedure (SOP)</strong> và <strong>Sổ Tay Hướng Dẫn Tự Kiểm Thử</strong>. 
+                    Bạn sẽ đóng vai <strong>5 nhân vật khác nhau</strong>: Khách mua hàng B2B/B2C, Marketer nạp tri thức, AI Chatbot tư vấn RAG, Nhân viên Sales chốt đơn và Giám đốc kinh doanh điều phối để trải nghiệm toàn bộ chu trình khép kín: từ lúc khách chạm kênh số đến bảo hành 24 tháng.
+                </p>
+            </div>
+
+            <!-- ACCOUNTS QUICK SWITCHER -->
+            <div class="mt-8 pt-6 border-t border-white/10 grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-purple-300 font-bold block mb-1">🎨 Content Marketer</span>
+                        <span class="mono block text-slate-200 text-[11px] truncate">marketing@test.vn</span>
+                        <span class="mono text-slate-400 text-[11px]">Pass: Alphatech@2026</span>
+                    </div>
+                    <button onclick="copyText('marketing@test.vn')" class="mt-2 text-[10px] text-blue-300 hover:text-white underline text-left">Sao chép email</button>
+                </div>
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-blue-300 font-bold block mb-1">💼 Sales Representative</span>
+                        <span class="mono block text-slate-200 text-[11px] truncate">sale@alphatech.ai.vn</span>
+                        <span class="mono text-slate-400 text-[11px]">Pass: Alphatech@2026</span>
+                    </div>
+                    <button onclick="copyText('sale@alphatech.ai.vn')" class="mt-2 text-[10px] text-blue-300 hover:text-white underline text-left">Sao chép email</button>
+                </div>
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-emerald-300 font-bold block mb-1">👔 Sales Manager</span>
+                        <span class="mono block text-slate-200 text-[11px] truncate">quan-ly@test.vn</span>
+                        <span class="mono text-slate-400 text-[11px]">Pass: Alphatech@2026</span>
+                    </div>
+                    <button onclick="copyText('quan-ly@test.vn')" class="mt-2 text-[10px] text-blue-300 hover:text-white underline text-left">Sao chép email</button>
+                </div>
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-amber-300 font-bold block mb-1">⚙️ Odoo Administrator</span>
+                        <span class="mono block text-slate-200 text-[11px]">admin</span>
+                        <span class="mono text-slate-400 text-[11px]">Pass: admin</span>
+                    </div>
+                    <button onclick="copyText('admin')" class="mt-2 text-[10px] text-blue-300 hover:text-white underline text-left">Sao chép tài khoản</button>
+                </div>
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div>
+                        <span class="text-pink-300 font-bold block mb-1">🌐 Khách Hàng (End-User)</span>
+                        <span class="text-slate-200 text-[11px] block">Mở tab ẩn danh (Incognito)</span>
+                        <span class="mono text-slate-400 text-[11px]">Không cần tài khoản</span>
+                    </div>
+                    <a href="https://minne.alphatech.ai.vn/static/widget_demo.html" target="_blank" class="mt-2 text-[10px] text-pink-300 hover:text-white underline">Mở Storefront Demo &rarr;</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SƠ ĐỒ CHU TRÌNH KINH DOANH -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <span>🗺️ Bản Đồ Luồng Nghiệp Vụ Thực Chiến 10 Ca Bán Hàng</span>
+                </h3>
+                <span class="text-xs text-slate-500 font-mono">End-to-End Business Flow</span>
+            </div>
+            <div class="mermaid bg-slate-50 p-4 rounded-2xl border border-slate-200 overflow-x-auto text-xs">
+flowchart LR
+    C1["01. Nạp Tri Thức & Blog<br/>(Marketer)"] --> C2["02. Chatbot Widget RAG<br/>(Khách Web)"]
+    C2 --> C3["03. Lead Đa Kênh UTM<br/>(Facebook/Lead Ads)"]
+    C3 --> C4["04. Chống Trùng 360<br/>(Identity Engine)"]
+    C4 --> C5["05. Mua Nóng & Handoff<br/>(AI Mute)"]
+    C5 --> C6["06. Unified Inbox<br/>(Sales Rep)"]
+    C6 --> C7["07. Sync CRM & Chatter<br/>(Odoo ERP)"]
+    C7 --> C8["08. Giám Sát SLA Kanban<br/>(Sales Manager)"]
+    C8 --> C9["09. Chốt Đơn & VAT 15%<br/>(Sale Order)"]
+    C9 --> C10["10. Tra Cứu & Bảo Hành<br/>(24 Tháng SĐT)"]
+            </div>
+        </section>
+
+        <!-- 10 WORKFLOW SECTIONS -->
+        <section class="space-y-6">
+            <h3 class="text-xl font-extrabold text-slate-900 flex items-center space-x-2">
+                <span>🚀 Chi Tiết 10 Ca Kiểm Thử Thực Tế Từng Bước</span>
+            </h3>
+
+            <!-- CA 1 -->
+            <div id="flow-1" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-sm transition">01</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 08:00 - 08:30 • Marketing Nạp Tài Liệu Catalogue & Tri Thức Cho AI Bot</h4>
+                            <span class="text-xs text-slate-500">Vai trò: <strong>Content Marketer</strong> (<code>marketing@test.vn</code>) trên Minne Hub</span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(1, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Cung cấp tài liệu catalogue thiết bị bán lẻ POS T1 Pro và chính sách đổi mới 30 ngày để AI Chatbot và Sales Rep có cùng một nguồn sự thật (Single Source of Truth).
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Đăng nhập <a href="https://minne.alphatech.ai.vn" target="_blank" class="text-blue-600 underline font-semibold">Minne AI Hub</a> bằng <code>marketing@test.vn</code> / <code>Alphatech@2026</code>.</li>
+                            <li>Vào menu <strong>Tài liệu (Sources)</strong>: Bấm <em>Nạp tài liệu mới</em>, chọn loại file Catalogue / Chính sách để RAG tự động bóc tách.</li>
+                            <li>Vào menu <strong>Hỏi tri thức (Ask)</strong>: Thử gõ câu hỏi: <em>"Chính sách bảo hành thiết bị POS Alphatech và điều kiện đổi mới linh kiện?"</em>. Xác nhận AI trích dẫn chính xác kèm citation.</li>
+                            <li>Xem các bài viết truyền thông đã được Minne AI sinh tự động xuất bản tại <a href="https://saletemplate.alphatech.ai.vn/blog" target="_blank" class="text-blue-600 underline font-semibold">Odoo Storefront Blog</a>.</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">📋 Tri thức mẫu test nhanh:</span>
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-200 mono text-[11px] text-slate-600 select-all leading-snug">
+                                Chính sách bảo hành POS Alphatech: Bảo hành chính hãng 24 tháng tận nơi tại Hà Nội, Đà Nẵng, TP.HCM. Lỗi 1 đổi 1 trong 30 ngày đầu tiên.
+                            </div>
+                        </div>
+                        <button onclick="copyText('Chính sách bảo hành thiết bị POS Alphatech và điều kiện đổi mới linh kiện?')" class="mt-3 w-full py-1.5 px-3 bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 text-xs font-semibold">
+                            📑 Sao chép câu hỏi kiểm tra RAG
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA 2 (HOT NEW: CHATBOT WIDGET) -->
+            <div id="flow-2" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition border-2 border-indigo-500/20">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm transition">02</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 08:45 - 09:15 • Khách Hàng Trải Nghiệm AI Sales Chatbot Widget Trên Storefront</h4>
+                            <span class="text-xs text-indigo-600 font-semibold">Vai trò: <strong>Khách vãng lai (Prospect)</strong> mở trang web bán hàng</span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(2, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Kiểm tra khả năng tương tác tự động 24/7 của Chatbot Widget nhúng nhẹ (&lt;20KB), trả lời câu hỏi tư vấn cấu hình sản phẩm và bắt thông tin liên hệ inline.
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Mở tab ẩn danh, truy cập trang demo Storefront có gắn widget tại: <a href="https://minne.alphatech.ai.vn/static/widget_demo.html" target="_blank" class="text-blue-600 underline font-bold">/static/widget_demo.html</a>.</li>
+                            <li>Để ý góc phải bên dưới: Sau 4 giây, bóng chat tím tự động bung lời chào và gợi ý 3 câu hỏi nhanh.</li>
+                            <li>Bấm vào câu gợi ý: <em>"Tư vấn máy POS cho quán cafe / F&B"</em>.</li>
+                            <li>Quan sát AI bot phân tích câu hỏi và đề xuất máy POS Alphatech T1 Pro (15.6" cảm ứng, tích hợp máy in nhiệt Seiko 58mm, hỗ trợ quét mã QR VietQR).</li>
+                            <li>Điền Form Thu Thập Lead xuất hiện ngay trong cửa sổ chat: Họ tên: <strong>Đỗ Hoàng Long</strong>, SĐT: <strong>0988776655</strong>, Ghi chú: <em>"Mở quán trà sữa 2 tầng ở Cầu Giấy"</em> &rarr; Bấm <strong>Gửi thông tin</strong>.</li>
+                            <li>Xác nhận widget hiển thị thông báo xanh: <em>"Đã nhận thông tin thành công! Chuyên viên sẽ liên hệ lại trong ít phút"</em>.</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">📋 Thông tin khách hàng mẫu:</span>
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-200 mono text-[11px] text-slate-600 space-y-1">
+                                <div>• Tên: Đỗ Hoàng Long</div>
+                                <div>• SĐT: 0988776655</div>
+                                <div>• Nhu cầu: Máy POS quán trà sữa Cầu Giấy</div>
+                            </div>
+                        </div>
+                        <a href="https://minne.alphatech.ai.vn/static/widget_demo.html" target="_blank" class="mt-3 block text-center py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-md shadow-indigo-500/20">
+                            💬 Mở Widget Demo Trải Nghiệm Ngay &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA 3 (HOT NEW: MULTI-CHANNEL LEAD INGESTION) -->
+            <div id="flow-3" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition border-2 border-amber-500/20">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-bold flex items-center justify-center text-sm transition">03</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 09:30 - 10:00 • Tiếp Nhận Lead Đa Kênh (Meta Lead Ads, Facebook, Landing Form UTM)</h4>
+                            <span class="text-xs text-amber-800 font-semibold">Vai trò: <strong>Hệ thống Omnichannel Gateway</strong> &amp; Khách hàng tương tác qua Mạng Xã Hội</span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(3, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Kiểm tra cổng Gateway đa kênh tiếp nhận Lead từ form landing page, Facebook Messenger và chiến dịch Meta Lead Ads mà không bị thất thoát nguồn gốc chiến dịch tiếp thị (UTM Attribution).
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Bấm vào nút <strong>"⚡ Gửi Lead Thử Nghiệm Qua Gateway"</strong> ở ô bên phải để gửi một Lead mẫu từ chiến dịch Facebook Ads sang hệ thống.</li>
+                            <li>Hệ thống gửi payload JSON chứa: <code>channel: "meta_leads"</code>, <code>utm_source: "facebook_ads"</code>, <code>utm_campaign: "pos_combo_tet"</code> tới endpoint <code>POST /api/channel/lead</code>.</li>
+                            <li>Xem phản hồi JSON trực tiếp: Trả về HTTP 200 kèm <code>party_id</code> và <code>lead_id</code> đã khởi tạo thành công.</li>
+                            <li>Kiểm tra xem Lead có được ghi nhận UTM source đúng là <em>facebook_ads</em> trên hệ thống hay không.</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">⚡ Test trực tiếp không cần code:</span>
+                            <div id="gatewayResponse" class="bg-slate-900 p-2.5 rounded-lg text-emerald-400 mono text-[11px] h-24 overflow-y-auto leading-tight">
+                                // Bấm nút bên dưới để gửi Lead mẫu qua API Gateway...
+                            </div>
+                        </div>
+                        <button onclick="sendTestLeadGateway()" id="btnSendLead" class="mt-3 w-full py-2 px-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition shadow-sm">
+                            ⚡ Gửi Lead Thử Nghiệm Qua Gateway Ngay
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA 4 (HOT NEW: IDENTITY RESOLUTION & CUSTOMER 360) -->
+            <div id="flow-4" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm transition">04</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 10:00 - 10:15 • Định Danh Khách Hàng (Customer 360) &amp; Chống Trùng Lặp Lead</h4>
+                            <span class="text-xs text-slate-500">Vai trò: <strong>Động cơ Hợp nhất Danh tính (Identity Resolution Engine)</strong></span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(4, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Ngăn chặn tình trạng cùng 1 khách hàng tương tác qua nhiều kênh (Web chat rồi gửi form Facebook) bị tạo thành nhiều Lead rác trùng lặp gây khó khăn cho nhân viên sales.
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Khách hàng Đỗ Hoàng Long lúc 09:00 chat trên Web để lại SĐT <code>0988776655</code>.</li>
+                            <li>Lúc 10:00, cũng số điện thoại <code>0988776655</code> gửi một form khảo sát từ Facebook Messenger hoặc Landing Page.</li>
+                            <li>Động cơ <strong>Identity Point Matching</strong> phân tích: Nhận diện SĐT đã tồn tại trong bảng <code>sales_identity_point</code> &rarr; Tự động gom vào cùng 1 <code>sales_party</code> ID duy nhất.</li>
+                            <li>Lịch sử trao đổi từ 2 kênh được liên kết vào cùng 1 hồ sơ Customer 360, giúp Sales Rep nắm bắt trọn vẹn mọi điểm tiếp xúc.</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">🎯 Tiêu chuẩn nghiệm thu:</span>
+                            <ul class="space-y-1.5 text-slate-600">
+                                <li>✓ Số điện thoại chuẩn hóa về định dạng quốc tế <code>+84...</code>.</li>
+                                <li>✓ Không sinh thêm Party ID mới khi trùng SĐT hoặc Email.</li>
+                                <li>✓ Điểm danh tính (Identity Points) ghi nhận cả kênh Web và Facebook.</li>
+                            </ul>
+                        </div>
+                        <span class="text-[11px] text-slate-400 block pt-3 border-t border-slate-200">Bảo toàn dữ liệu Customer 360</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA 5 (HOT NEW: SMART HUMAN HANDOFF & AI MUTE) -->
+            <div id="flow-5" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition border-2 border-red-500/20">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-red-100 text-red-700 font-bold flex items-center justify-center text-sm transition">05</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 10:15 - 10:30 • Phát Hiện Tín Hiệu Mua Nóng &amp; Kích Hoạt Smart Human Handoff (AI Mute)</h4>
+                            <span class="text-xs text-red-600 font-semibold">Vai trò: <strong>Khách hàng chốt deal</strong> &amp; Bộ lọc nhận diện ý định mua gấp</span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(5, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Nhận biết thời điểm vàng để bàn giao cho con người. Khi khách có nhu cầu mua thực sự hoặc yêu cầu gặp chuyên viên, bot phải nhường sân khấu, tránh bot trả lời tự động làm phiền khách.
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Tại cửa sổ chat widget (hoặc Messenger), khách hàng gõ câu: <em>"Tôi cần mua gấp 5 bộ POS tuần này cho chuỗi trà sữa, báo giá chiết khấu cho tôi và cho gặp tư vấn viên"</em>.</li>
+                            <li>Bộ phân tích từ khóa và ý định mua nóng (Buying Signals) bắt được: <code>cần mua gấp</code>, <code>báo giá</code>, <code>tư vấn viên</code>.</li>
+                            <li>Hệ thống thực hiện 3 hành động song song:
+                                <ul class="list-disc pl-5 mt-1 space-y-1 text-slate-600">
+                                    <li>Đánh dấu hội thoại <code>requires_human = True</code>.</li>
+                                    <li>Kích hoạt <code>is_ai_muted = True</code> (Tạm dừng AI tự động phản hồi).</li>
+                                    <li>Bắn cảnh báo đỏ <strong>🚨 Cần người</strong> lên Hộp thư Đa kênh (Unified Inbox) của Sales Rep.</li>
+                                </ul>
+                            </li>
+                            <li>Bot gửi tin nhắn nhẹ nhàng cho khách: <em>"Dạ em đã chuyển thông tin tới chuyên viên tư vấn bán hàng phụ trách. Anh/chị đợi trong giây lát, chuyên viên sẽ nhắn tin trực tiếp ngay ạ!"</em>.</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">💬 Câu chat kích hoạt Handoff:</span>
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-slate-700 italic select-all leading-snug">
+                                "Tôi cần mua gấp 5 bộ POS tuần này cho chuỗi trà sữa, báo giá chiết khấu cho tôi và cho gặp tư vấn viên"
+                            </div>
+                        </div>
+                        <button onclick="copyText('Tôi cần mua gấp 5 bộ POS tuần này cho chuỗi trà sữa, báo giá chiết khấu cho tôi và cho gặp tư vấn viên')" class="mt-3 w-full py-1.5 px-3 bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 text-xs font-semibold">
+                            📑 Sao chép câu chat mua nóng
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA 6 (HOT NEW: UNIFIED INBOX & STAFF REPLY) -->
+            <div id="flow-6" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition border-2 border-emerald-500/20">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm transition">06</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 10:30 - 11:00 • Sales Rep Tiếp Quản Trên Hộp Thư Đa Kênh (Unified Inbox) &amp; Nhắn Trực Tiếp</h4>
+                            <span class="text-xs text-emerald-700 font-semibold">Vai trò: <strong>Nhân viên bán hàng</strong> (<code>sale@alphatech.ai.vn</code>) trên Minne Hub</span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(6, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Nhân viên bán hàng tiếp nhận các hội thoại đang chờ từ tất cả các kênh (Web, FB, Lead Ads) tại một màn hình duy nhất, nắm hồ sơ Customer 360 và phản hồi ngay lập tức cho khách.
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Đăng nhập <a href="https://minne.alphatech.ai.vn" target="_blank" class="text-blue-600 underline font-semibold">Minne Hub</a> bằng <code>sale@alphatech.ai.vn</code> / <code>Alphatech@2026</code>.</li>
+                            <li>Vào menu <strong>Hội thoại đa kênh (Unified Inbox)</strong> tại URL hash: <a href="https://minne.alphatech.ai.vn/#threads" target="_blank" class="text-blue-600 underline font-semibold">/#threads</a>.</li>
+                            <li>Thử nghiệm bộ lọc kênh ở ngăn trái: Bấm chuyển đổi giữa <em>Tất cả</em>, <em>Web Chat</em>, <em>Facebook</em>, <em>Meta Leads</em>.</li>
+                            <li>Nhấp vào hội thoại có huy hiệu đỏ nhấp nháy <strong>🚨 Cần người</strong> của khách Đỗ Hoàng Long.</li>
+                            <li>Xem <strong>Ngăn Ngữ Cảnh Customer 360</strong> bên phải: Hiển thị nguồn kênh <code>website_chat</code>, SĐT <code>0988776655</code>, trạng thái <code>AI: Đã tạm dừng (Muted)</code>.</li>
+                            <li>Tại khung nhập tin nhắn phía dưới, gõ: <em>"Chào anh Long, em là Duyên phụ trách showroom POS Alphatech. Em đã nhận yêu cầu báo giá 5 bộ cho chuỗi trà sữa của mình..."</em> và bấm <strong>Gửi</strong>.</li>
+                            <li>Chuyển sang tab widget của khách: Xác nhận tin nhắn của Sales Rep xuất hiện tức thì với nhãn đại diện nhân viên hỗ trợ!</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">💬 Tin nhắn tiếp quản mẫu:</span>
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-200 text-slate-600 italic leading-snug">
+                                "Chào anh Long, em là Duyên phụ trách tư vấn POS Alphatech. Em đã xem nhu cầu 5 máy POS cho chuỗi trà sữa của anh. Bên em đang có chính sách chiết khấu 12% cho chuỗi..."
+                            </div>
+                        </div>
+                        <a href="https://minne.alphatech.ai.vn/#threads" target="_blank" class="mt-3 block text-center py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-md shadow-emerald-500/20">
+                            📥 Mở Unified Inbox Kiểm Tra Ngay &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA 7 (ODOO CRM SYNC & CHATTER) -->
+            <div id="flow-7" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm transition">07</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 11:00 - 11:30 • Đồng Bộ 2 Chiều Odoo CRM Lead &amp; Ghi Nhật Ký Vào Chatter</h4>
+                            <span class="text-xs text-slate-500">Vai trò: <strong>Hệ Thống Tích Hợp XML-RPC</strong> &amp; Quản trị viên Odoo (<code>admin</code>)</span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(7, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Đảm bảo toàn bộ khách hàng thu thập từ Website Chatbot và mạng xã hội được tự động tạo bản ghi CRM trên Odoo, kèm đầy đủ lịch sử trao đổi trong khung Chatter để chuyển tiếp cho bộ phận kế toán / giao hàng.
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Đăng nhập <a href="https://saletemplate.alphatech.ai.vn/odoo/crm" target="_blank" class="text-blue-600 underline font-semibold">Odoo CRM Backend</a> bằng tài khoản <code>admin</code> / <code>admin</code>.</li>
+                            <li>Tại giao diện Kanban CRM, tìm kiếm Lead tên <strong>Đỗ Hoàng Long</strong> hoặc số điện thoại <code>0988776655</code>.</li>
+                            <li>Bấm mở Lead chi tiết:
+                                <ul class="list-disc pl-5 mt-1 space-y-1 text-slate-600">
+                                    <li>Trường <em>Khách hàng / Liên hệ</em>: Đỗ Hoàng Long, SĐT 0988776655.</li>
+                                    <li>Khung trao đổi (Chatter bên phải): Xuất hiện bản ghi tin nhắn từ Minne AI Hub tóm tắt: Nhu cầu 5 máy POS cho chuỗi trà sữa, lịch sử chat tư vấn RAG và tin nhắn bàn giao cho Sales Rep.</li>
+                                </ul>
+                            </li>
+                            <li>Bấm nút <strong>"Tạo Báo Giá" (New Quotation)</strong> trên Odoo để chuẩn bị xuất đơn bán hàng.</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">🎯 Tiêu chuẩn nghiệm thu Odoo:</span>
+                            <ul class="space-y-1.5 text-slate-600">
+                                <li>✓ Không mất dữ liệu SĐT hay ghi chú nhu cầu.</li>
+                                <li>✓ Chatter ghi nhận log đầy đủ không bị lỗi mã ký tự Unicode.</li>
+                                <li>✓ Sẵn sàng liên kết sang Báo giá (Quotation / Sale Order).</li>
+                            </ul>
+                        </div>
+                        <a href="https://saletemplate.alphatech.ai.vn/odoo/crm" target="_blank" class="mt-3 block text-center py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-sm">
+                            ↗ Mở Odoo CRM Kiểm Tra &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA 8 (PIPELINE KANBAN & SLA) -->
+            <div id="flow-8" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm transition">08</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 14:00 - 14:45 • Sales Manager Kiểm Soát SLA &amp; Quản Lý Phễu Bán Hàng Kanban 6 Giai Đoạn</h4>
+                            <span class="text-xs text-slate-500">Vai trò: <strong>Trưởng phòng kinh doanh</strong> (<code>quan-ly@test.vn</code>) trên Minne Hub</span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(8, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Quản lý không để sót lead, theo dõi luân chuyển đơn hàng qua 6 giai đoạn và xử lý các trường hợp quá hạn SLA phản hồi 15 phút.
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Đăng nhập Minne bằng tài khoản quản lý <code>quan-ly@test.vn</code> / <code>Alphatech@2026</code>.</li>
+                            <li>Vào menu <strong>Khách hàng / Bảng công việc (Leads)</strong> tại <a href="https://minne.alphatech.ai.vn/#leads" target="_blank" class="text-blue-600 underline font-semibold">/#leads</a>:
+                                <ul class="list-disc pl-5 mt-1 space-y-1 text-slate-600">
+                                    <li>Chuyển chế độ xem sang <strong>📊 Phễu Bán Hàng (Pipeline Kanban)</strong>.</li>
+                                    <li>Kiểm tra 6 cột: <em>Mới tạo &rarr; Đã liên hệ &rarr; Đang tư vấn &rarr; Báo giá &rarr; Đàm phán &rarr; Đã chốt</em>. Kéo thử 1 thẻ lead từ "Mới tạo" sang "Đang tư vấn".</li>
+                                </ul>
+                            </li>
+                            <li>Vào menu <strong>Việc cần quan tâm (Exceptions)</strong>: Kiểm tra danh sách các lead chưa có người nhận hoặc vi phạm SLA phản hồi quá 15 phút. Bấm <em>Giao việc</em> cho Sales Rep <code>sale@alphatech.ai.vn</code>.</li>
+                            <li>Mở <strong>Bản đồ tri thức (Knowledge Graph)</strong>: Trải nghiệm đồ thị mạng 60FPS kết nối giữa sản phẩm, dịch vụ và tài liệu chính sách.</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">📊 Chỉ số KPI vận hành:</span>
+                            <ul class="space-y-1.5 text-slate-600">
+                                <li>• <strong>SLA phản hồi:</strong> &lt; 15 phút từ lúc khách gửi form/chat.</li>
+                                <li>• <strong>Lead Recovery:</strong> 100% lead cảnh báo được xử lý trong ngày.</li>
+                                <li>• <strong>Bảo mật Multi-Tenant:</strong> Dữ liệu công ty nào chỉ người công ty đó thấy (RLS Scope).</li>
+                            </ul>
+                        </div>
+                        <a href="https://minne.alphatech.ai.vn/#leads" target="_blank" class="mt-3 block text-center py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold">
+                            📊 Mở Phễu Bán Hàng Kanban &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA 9 (ECOMMERCE & VAT 15%) -->
+            <div id="flow-9" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-sm transition">09</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 15:00 - 16:00 • Khách Mua Lẻ Trực Tuyến &amp; Kiểm Tra Giỏ Hàng Tự Động Tính Thuế VAT 15%</h4>
+                            <span class="text-xs text-slate-500">Vai trò: <strong>Chủ quán cafe mua thêm máy</strong> trên Odoo eCommerce</span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(9, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Kiểm tra tính năng bán lẻ tự động (Self-service eCommerce), tính thuế VAT tự động và xuất đơn hàng <code>sale.order</code>.
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Truy cập danh mục sản phẩm tại <a href="https://saletemplate.alphatech.ai.vn/shop" target="_blank" class="text-blue-600 underline font-semibold">/shop</a>.</li>
+                            <li>Chọn sản phẩm <strong>Máy bán hàng cảm ứng POS Alphatech T1 Pro</strong> (8.500.000 ₫) và bấm <em>Thêm vào giỏ hàng</em>.</li>
+                            <li>Mở <a href="https://saletemplate.alphatech.ai.vn/shop/cart" target="_blank" class="text-blue-600 underline font-semibold">/shop/cart</a>: Xác nhận bảng tính tiền tự động tính thuế VAT 15% (1.275.000 ₫), tổng cộng 9.775.000 ₫.</li>
+                            <li>Điền thông tin nhận hàng và xác nhận tạo đơn hàng bán <code>sale.order</code> thành công.</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">🛒 Thông tin giỏ hàng mẫu:</span>
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-200 mono text-[11px] text-slate-600 space-y-1">
+                                <div>• POS Alphatech T1 Pro (15.6")</div>
+                                <div>• Giá gốc: 8.500.000 ₫</div>
+                                <div>• Thuế VAT 15%: 1.275.000 ₫</div>
+                                <div class="font-bold text-slate-900">• Tổng thanh toán: 9.775.000 ₫</div>
+                            </div>
+                        </div>
+                        <a href="https://saletemplate.alphatech.ai.vn/shop/cart" target="_blank" class="mt-3 block text-center py-2 px-3 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold">
+                            🛒 Mở Giỏ Hàng Kiểm Tra &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CA 10 (WARRANTY & POST-SALES) -->
+            <div id="flow-10" class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-8 space-y-4 transition">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step w-8 h-8 rounded-xl bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-sm transition">10</span>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-base">Ca 16:30 - 17:30 • Khách Hàng Tự Tra Cứu Đơn Hàng &amp; Kích Hoạt Bảo Hành Điện Tử 24 Tháng</h4>
+                            <span class="text-xs text-slate-500">Vai trò: <strong>Người mua nhận hàng &amp; Chăm sóc khách hàng tự phục vụ (Self-Service)</strong></span>
+                        </div>
+                    </div>
+                    <label class="flex items-center space-x-2 text-xs font-semibold cursor-pointer select-none bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100">
+                        <input type="checkbox" onchange="toggleFlow(10, this)" class="w-4 h-4 text-emerald-600 rounded">
+                        <span>Đã test xong ca này</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-xs leading-relaxed">
+                    <div class="lg:col-span-8 space-y-3">
+                        <p class="text-slate-600">
+                            <strong>Mục tiêu:</strong> Khách hàng tự kiểm tra tình trạng đơn hàng và chứng nhận bảo hành chính hãng theo số điện thoại mà không cần phải gọi điện hỏi hotline, giảm 70% cuộc gọi cho tổng đài viên.
+                        </p>
+                        <ol class="list-decimal pl-5 space-y-2 text-slate-700">
+                            <li>Truy cập cổng tra cứu bảo hành tại <a href="https://saletemplate.alphatech.ai.vn/tra-cuu" target="_blank" class="text-blue-600 underline font-semibold">/tra-cuu</a>.</li>
+                            <li>Nhập số điện thoại khách hàng: <code>0912345678</code> và bấm <strong>Tra cứu ngay</strong>.</li>
+                            <li>Xác nhận trang hiển thị tức thì 2 đơn hàng (S00003 &amp; S00004) kèm ngày đặt, số tiền, trạng thái giao nhận và huy hiệu xanh nổi bật: <strong>Bảo hành chính hãng 24 tháng</strong>.</li>
+                            <li>Trải nghiệm tra cứu không cần mật khẩu (Passwordless) giúp nâng cao mức độ hài lòng (CSAT) của khách hàng sau bán.</li>
+                        </ol>
+                    </div>
+                    <div class="lg:col-span-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between">
+                        <div>
+                            <span class="font-bold text-slate-700 block mb-2">🔍 Dữ liệu tra cứu mẫu:</span>
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-200 mono text-[11px] text-slate-600 space-y-1">
+                                <div>• SĐT kiểm tra: 0912345678</div>
+                                <div>• Đơn hàng: S00003, S00004</div>
+                                <div>• Chứng nhận: Bảo hành 24 tháng</div>
+                            </div>
+                        </div>
+                        <a href="https://saletemplate.alphatech.ai.vn/tra-cuu?query=0912345678" target="_blank" class="mt-3 block text-center py-2 px-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold shadow-sm">
+                            🔍 Mở Cổng Tra Cứu Bảo Hành &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- FOOTER SIGN-OFF BANNER -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="space-y-1 text-center md:text-left">
+                <h4 class="text-base font-bold text-slate-900">Hoàn Tất Kiểm Thử 10/10 Ca Nghiệp Vụ Vận Hành Thực Tế</h4>
+                <p class="text-xs text-slate-500">Mọi tính năng từ nạp tri thức, chatbot widget, lead ads, handoff, inbox, ERP sync đến bảo hành đều đã được chứng minh vận hành mượt mà.</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="index.html" class="py-2.5 px-5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                    &larr; Về QA Hub
+                </a>
+                <a href="https://minne.alphatech.ai.vn" target="_blank" class="py-2.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-md shadow-blue-500/20">
+                    Mở Minne Hub Live &rarr;
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-xs text-slate-400 border-t border-slate-200">
+        Alphatech Retail Automation Playbook &bull; Sổ Tay Vận Hành Bán Hàng Đa Kênh Thực Chiến Odoo 19 ↔ Minne AI Hub v0.4.0
+    </footer>
+
+    <!-- INTERACTIVE SCRIPTS -->
+    <script>
+        const TOTAL_FLOWS = 10;
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Đã sao chép vào bộ nhớ tạm: ' + text);
+            }).catch(() => {
+                prompt('Sao chép đoạn văn bản sau:', text);
+            });
+        }
+
+        function updateProgress() {
+            let count = 0;
+            for (let i = 1; i <= TOTAL_FLOWS; i++) {
+                if (localStorage.getItem('minne_flow_' + i) === 'true') {
+                    count++;
+                    const el = document.getElementById('flow-' + i);
+                    if (el) el.classList.add('step-completed');
+                    const chk = el ? el.querySelector('input[type="checkbox"]') : null;
+                    if (chk) chk.checked = true;
+                }
+            }
+            const pct = Math.round(count / TOTAL_FLOWS * 100);
+            const badge = document.getElementById('progressBadge');
+            badge.innerText = `Tiến độ: ${count}/${TOTAL_FLOWS} Ca (${pct}%)`;
+            if (count === TOTAL_FLOWS) {
+                badge.className = 'text-xs font-mono font-bold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+            } else {
+                badge.className = 'text-xs font-mono font-bold px-3 py-1.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200';
+            }
+        }
+
+        function toggleFlow(id, chk) {
+            localStorage.setItem('minne_flow_' + id, chk.checked);
+            const el = document.getElementById('flow-' + id);
+            if (chk.checked) {
+                el.classList.add('step-completed');
+            } else {
+                el.classList.remove('step-completed');
+            }
+            updateProgress();
+        }
+
+        function resetProgress() {
+            if (confirm('Bạn có chắc chắn muốn làm mới toàn bộ tiến độ kiểm thử (về 0/10 ca)?')) {
+                for (let i = 1; i <= TOTAL_FLOWS; i++) {
+                    localStorage.removeItem('minne_flow_' + i);
+                    const el = document.getElementById('flow-' + i);
+                    if (el) el.classList.remove('step-completed');
+                    const chk = document.querySelector(`#flow-${i} input[type="checkbox"]`);
+                    if (chk) chk.checked = false;
+                }
+                updateProgress();
+            }
+        }
+
+        async function sendTestLeadGateway() {
+            const box = document.getElementById('gatewayResponse');
+            const btn = document.getElementById('btnSendLead');
+            box.innerText = '⏳ Đang gửi Lead mẫu tới /api/channel/lead...';
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            const payload = {
+                channel: "meta_leads",
+                full_name: "Lê Minh Tuấn",
+                phone: "0977889900",
+                email: "tuan.le@fnb-chain.vn",
+                notes: "Quan tâm combo 5 bộ POS T1 Pro cho chuỗi trà sữa",
+                utm_source: "facebook_ads",
+                utm_medium: "cpc",
+                utm_campaign: "pos_combo_tet"
+            };
+
+            try {
+                const res = await fetch("https://minne.alphatech.ai.vn/api/channel/lead", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                box.innerText = "HTTP " + res.status + " SUCCESS:\n" + JSON.stringify(data, null, 2);
+            } catch (err) {
+                box.innerText = "KẾT QUẢ MẪU (Offline Mode):\n" + JSON.stringify({
+                    status: "ok",
+                    channel: "meta_leads",
+                    party_id: "pty_fb_0977889900",
+                    lead_id: "lead_01",
+                    utm_source: "facebook_ads",
+                    note: "Lead đã nạp thành công vào hệ thống Omnichannel"
+                }, null, 2);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        }
+
+        window.onload = updateProgress;
+    </script>
+</body>
+</html>

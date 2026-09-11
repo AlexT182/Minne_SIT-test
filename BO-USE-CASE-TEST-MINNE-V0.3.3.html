@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bộ Use Case Kiểm Thử Toàn Diện — Minne Control Plane v0.3.3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --surface-card: #182234;
+      --border: #334155;
+      --border-accent: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --success: #34d399;
+      --success-bg: rgba(52, 211, 153, 0.12);
+      --warn: #fbbf24;
+      --warn-bg: rgba(251, 191, 36, 0.12);
+      --danger: #f87171;
+      --danger-bg: rgba(248, 113, 113, 0.12);
+      --purple: #c084fc;
+      --purple-bg: rgba(192, 132, 252, 0.12);
+      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 0;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px 100px; }
+
+    /* Header */
+    .header-banner {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      margin-bottom: 36px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .header-banner::after {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -20%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 900px;
+      line-height: 1.6;
+    }
+    .meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .meta-item { display: flex; align-items: center; gap: 8px; }
+    .meta-item strong { color: var(--text); }
+
+    /* Account Grid */
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin: 40px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: var(--accent-glow);
+      color: var(--accent);
+      font-size: 18px;
+    }
+    .account-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+    .account-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .account-card:hover {
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+    }
+    .account-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .role-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+    }
+    .tag-admin { background: rgba(192, 132, 252, 0.15); color: var(--purple); border: 1px solid rgba(192, 132, 252, 0.3); }
+    .tag-manager { background: rgba(251, 191, 36, 0.15); color: var(--warn); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .tag-sales { background: rgba(52, 211, 153, 0.15); color: var(--success); border: 1px solid rgba(52, 211, 153, 0.3); }
+    
+    .org-banner {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 12.5px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .org-banner strong { color: var(--accent); }
+
+    .cred-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0f172a;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      margin-top: 8px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    .cred-row code { color: var(--accent); }
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .copy-btn:hover {
+      color: #fff;
+      border-color: var(--accent);
+      background: var(--surface-hover);
+    }
+
+    /* Progress Tracker Bar */
+    .progress-box {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 24px;
+      margin-bottom: 36px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      position: sticky;
+      top: 16px;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+    .progress-bar-wrap {
+      width: 220px;
+      height: 10px;
+      background: #0f172a;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Use Case Card */
+    .uc-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+    }
+    .uc-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .uc-card.completed {
+      border-color: rgba(52, 211, 153, 0.4);
+      background: linear-gradient(180deg, rgba(52, 211, 153, 0.04) 0%, var(--surface-card) 100%);
+    }
+    .uc-card.completed .uc-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .uc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      gap: 16px;
+    }
+    .uc-title-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .uc-checkbox {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      accent-color: var(--success);
+      margin-top: 4px;
+    }
+    .uc-title {
+      font-size: 19px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.4;
+    }
+    .uc-meta-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .uc-pill {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+    .uc-pill-p0 { background: rgba(248, 113, 113, 0.15); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.3); }
+    .uc-pill-p1 { background: rgba(251, 191, 36, 0.15); color: var(--warn); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .uc-pill-role { background: rgba(56, 189, 248, 0.15); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3); }
+
+    .uc-desc {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    /* Steps List */
+    .steps-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .steps-list {
+      list-style: none;
+      counter-reset: step-counter;
+      margin-bottom: 20px;
+    }
+    .steps-list li {
+      position: relative;
+      padding-left: 36px;
+      margin-bottom: 14px;
+      font-size: 14.5px;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .steps-list li::before {
+      counter-increment: step-counter;
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 24px;
+      height: 24px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+    .steps-list code {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: #38bdf8;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    /* Expected Result Callout */
+    .expected-box {
+      background: var(--success-bg);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+    .expected-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .expected-desc {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #0b1120;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-action:hover {
+      background: #7dd3fc;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+    .btn-secondary {
+      background: var(--surface-hover);
+      color: #fff;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: #475569;
+      border-color: #64748b;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-faint);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header Banner -->
+  <header class="header-banner">
+    <div class="badge">TEST PROTOCOL · MINNE V0.3.3 · BUILD 2026.09.07-V4</div>
+    <h1>Bộ Use Case Kiểm Thử Toàn Diện Hệ Thống Minne</h1>
+    <p class="subtitle">
+      Tài liệu nghiệm thu thực chiến gồm 11 kịch bản kiểm thử: Phân quyền Super Admin vs Doanh nghiệp, Xem hồ sơ cá nhân Topbar, Khắc phục số 0 SĐT khi Import Excel, Phễu bán hàng Pipeline Kanban không mất lead, Inbound Webhook 2 chiều Google Sheets, Màn hình Việc cần quan tâm, Hệ tri thức & Bản đồ tri thức Graph View, Quản trị Multi-Tenant SaaS và Chốt đơn sang Odoo ERP.
+    </p>
+
+    <div class="meta-bar">
+      <div class="meta-item">
+        <span>🌐 Môi trường Test:</span>
+        <a href="https://minne.alphatech.ai.vn" target="_blank" style="color:var(--accent);font-weight:600;text-decoration:none">https://minne.alphatech.ai.vn ↗</a>
+      </div>
+      <div class="meta-item">
+        <span>📦 Phiên bản:</span>
+        <strong style="color:var(--success)">v0.3.3-controlplane</strong>
+      </div>
+      <div class="meta-item">
+        <span>🎯 Trạng thái:</span>
+        <strong>Sẵn sàng nghiệm thu 100%</strong>
+      </div>
+    </div>
+  </header>
+
+  <!-- Danh sách Tài khoản Test & Doanh Nghiệp -->
+  <h2 class="section-title">
+    <span class="icon">👥</span>
+    Danh Sách Tài Khoản & Phân Bổ Doanh Nghiệp Trực Thuộc
+  </h2>
+  <div class="account-grid">
+
+    <!-- Super Admin -->
+    <div class="account-card">
+      <div class="account-head">
+        <strong>1. Super Admin (Chủ nền tảng SaaS)</strong>
+        <span class="role-tag tag-admin">SUPER ADMIN</span>
+      </div>
+      <div class="org-banner">
+        <span>🏢 Trực thuộc:</span>
+        <strong>Nền tảng Minne SaaS (Chung)</strong>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">
+        Quản trị toàn bộ hệ sinh thái khách hàng doanh nghiệp, quota và hạ tầng AI. <strong>Không hiển thị</strong> dữ liệu kinh doanh, bán hàng hay tri thức nội bộ của từng công ty.
+      </p>
+      <div class="cred-row">
+        <span>Email:</span>
+        <code>taminhquan182@gmail.com</code>
+        <button class="copy-btn" onclick="copyText('taminhquan182@gmail.com')">Copy</button>
+      </div>
+      <div class="cred-row" style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2)">
+        <span>Menu thấy:</span>
+        <span style="color:var(--accent);font-size:12px">Quản trị Nền tảng · Cài đặt Nền tảng · Nhật ký</span>
+      </div>
+    </div>
+
+    <!-- Manager Alphatech -->
+    <div class="account-card">
+      <div class="account-head">
+        <strong>2. Quản lý Kinh doanh</strong>
+        <span class="role-tag tag-manager">MANAGER / CURATOR</span>
+      </div>
+      <div class="org-banner">
+        <span>🏢 Trực thuộc:</span>
+        <strong>Doanh nghiệp Alphatech (slug: default)</strong>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">
+        Điều hành kinh doanh công ty Alphatech: xem Bản tin sáng, kiểm soát Việc cần quan tâm, duyệt tri thức, xem Bản đồ tri thức Graph View và cấu hình Google Sheets Webhook.
+      </p>
+      <div class="cred-row">
+        <span>Email:</span>
+        <code>quan-ly@test.vn</code>
+        <button class="copy-btn" onclick="copyText('quan-ly@test.vn')">Copy</button>
+      </div>
+      <div class="cred-row">
+        <span>Mật khẩu:</span>
+        <code>12345678</code>
+        <button class="copy-btn" onclick="copyText('12345678')">Copy</button>
+      </div>
+    </div>
+
+    <!-- Sales Alphatech -->
+    <div class="account-card">
+      <div class="account-head">
+        <strong>3. Nhân viên Bán hàng</strong>
+        <span class="role-tag tag-sales">SALES / CONTRIBUTOR</span>
+      </div>
+      <div class="org-banner">
+        <span>🏢 Trực thuộc:</span>
+        <strong>Doanh nghiệp Alphatech (slug: default)</strong>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">
+        Họ tên: <strong>Trần Văn Nam</strong>. Thao tác tiếp nhận lead, chuyển giai đoạn trên Phễu bán hàng (Pipeline Kanban), cập nhật lịch hẹn, nhận đề xuất từ AI Copilot và đẩy đơn sang ERP.
+      </p>
+      <div class="cred-row">
+        <span>Email:</span>
+        <code>sale@alphatech.ai.vn</code>
+        <button class="copy-btn" onclick="copyText('sale@alphatech.ai.vn')">Copy</button>
+      </div>
+      <div class="cred-row">
+        <span>Mật khẩu:</span>
+        <code>12345678</code>
+        <button class="copy-btn" onclick="copyText('12345678')">Copy</button>
+      </div>
+    </div>
+
+    <!-- Tenant Admin -->
+    <div class="account-card">
+      <div class="account-head">
+        <strong>4. Admin Doanh nghiệp (Tenant Admin)</strong>
+        <span class="role-tag tag-admin" style="color:var(--accent);border-color:rgba(56,189,248,0.3);background:var(--accent-glow)">TENANT ADMIN</span>
+      </div>
+      <div class="org-banner">
+        <span>🏢 Trực thuộc:</span>
+        <strong>Tập Đoàn Hòa Bình (hoa-binh-corp)</strong>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">
+        Quản trị toàn bộ nhân sự nội bộ, thêm nhân viên, phân quyền phòng ban của công ty khách hàng. Hoàn toàn cách ly với Alphatech và Super Admin.
+      </p>
+      <div class="cred-row">
+        <span>Email:</span>
+        <code>admin@hoabinh.vn</code>
+        <button class="copy-btn" onclick="copyText('admin@hoabinh.vn')">Copy</button>
+      </div>
+      <div class="cred-row">
+        <span>Mật khẩu:</span>
+        <code>HoaBinh2026*</code>
+        <button class="copy-btn" onclick="copyText('HoaBinh2026*')">Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thanh Tiến Độ Test -->
+  <div class="progress-box">
+    <div class="progress-info">
+      <strong style="font-size:16px;color:#fff">Tiến độ Kiểm thử Nghiệm thu:</strong>
+      <div style="font-size:13px;color:var(--text-muted)">Đã hoàn thành <span id="completed-count" style="color:var(--success);font-weight:700">0</span> / 11 Use Cases</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <button class="btn-action btn-secondary" style="padding:6px 14px;font-size:13px" onclick="resetProgress()">Làm lại từ đầu</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- 11 USE CASES CHI TIẾT -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- Use Case 1 -->
+  <article class="uc-card" id="uc-1">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-1" onchange="toggleUC(1)">
+        <div>
+          <div class="uc-title">Use Case 1: Đăng nhập & Kiểm tra Phân quyền Menu theo Vai trò (Super Admin vs Doanh nghiệp)</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p0">Ưu tiên: P0 · Kiến trúc cốt lõi</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Super Admin, Quản lý, Sales</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra cơ chế phân định ranh giới tuyệt đối giữa Super Admin (Chủ nền tảng SaaS) và Người dùng Doanh nghiệp (Admin, Quản lý, Sales). Đảm bảo Super Admin không bị lẫn lộn dữ liệu tác nghiệp kinh doanh/tri thức nội bộ của công ty, đồng thời xác thực đã loại bỏ hoàn toàn lỗi 403 khi đăng xuất từ Admin rồi đăng nhập tài khoản khác.
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li>Truy cập <a href="https://minne.alphatech.ai.vn" target="_blank" style="color:var(--accent)">https://minne.alphatech.ai.vn</a>.</li>
+      <li><strong>Kiểm tra tài khoản Super Admin:</strong> Đăng nhập <code>taminhquan182@gmail.com</code>.
+        <br>• Quan sát góc trên bên trái: Tên hệ thống hiển thị là <strong>"Minne SaaS Platform"</strong>.
+        <br>• Quan sát thanh Sidebar bên trái: <strong>CHỈ hiển thị đúng 3 mục quản trị nền tảng</strong>: <code>Quản trị Nền tảng</code>, <code>Cài đặt Nền tảng</code>, <code>Nhật ký Hệ thống</code>.
+        <br>• <strong>Xác nhận loại trừ:</strong> Tuyệt đối <strong>KHÔNG</strong> thấy các mục tác nghiệp doanh nghiệp: <em>Bảng công việc kinh doanh, Việc cần quan tâm, Hỏi tri thức, Tài liệu, Chờ duyệt, Bản đồ tri thức, Sales Health, Tư vấn, Tin nhắn, Bản tin sáng</em>.
+      </li>
+      <li><strong>Kiểm tra khắc phục lỗi 403 khi đổi tài khoản:</strong> Đang ở giao diện Super Admin, bấm nút <strong>Đăng xuất</strong> ở góc trên bên phải.</li>
+      <li>Đăng nhập ngay bằng tài khoản Kinh doanh: <code>sale@alphatech.ai.vn</code> / <code>12345678</code>.
+        <br>• <strong>Xác nhận:</strong> Hệ thống tự động chuyển mượt mà về màn hình làm việc <strong>"Trang chủ"</strong> hoặc <strong>"Bảng công việc"</strong>. <strong>HOÀN TOÀN KHÔNG</strong> bị thông báo lỗi 403 màu đỏ ("Chỉ quản trị viên mới xem được mục này").
+      </li>
+      <li>Đăng xuất, sau đó đăng nhập bằng tài khoản Quản lý: <code>quan-ly@test.vn</code> / <code>12345678</code> để đối chiếu các menu điều hành doanh nghiệp.</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        • <strong>Super Admin:</strong> Chỉ làm việc ở tầng Platform. Không thấy menu tác nghiệp bán hàng hay tri thức nội bộ công ty.<br>
+        • <strong>Khắc phục triệt để lỗi 403:</strong> Đăng xuất từ Admin rồi đăng nhập Sales / Quản lý diễn ra trơn tru 100%, không bị kẹt view state cũ.<br>
+        • <strong>Quản lý (quan-ly@test.vn):</strong> Thấy đầy đủ menu điều hành doanh nghiệp: <strong>"Bản tin sáng"</strong>, <strong>"Bảng công việc"</strong>, <strong>"Tư vấn"</strong>, <strong>"Việc cần quan tâm"</strong>, <strong>"Chờ duyệt"</strong>, và <strong>"Bản đồ tri thức"</strong>.<br>
+        • <strong>Sales (sale@alphatech.ai.vn):</strong> Menu tác nghiệp gọn gàng: <strong>"Trang chủ"</strong>, <strong>"Bảng công việc"</strong>, <strong>"Tư vấn"</strong>, <strong>"Tin nhắn"</strong>, <strong>"Hỏi tri thức"</strong>, <strong>"Tài liệu"</strong>; không thấy các menu cấu hình Quản trị.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 2 (MỚI: HỒ SƠ CÁ NHÂN & ĐỊNH DANH DOANH NGHIỆP) -->
+  <article class="uc-card" id="uc-2">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-2" onchange="toggleUC(2)">
+        <div>
+          <div class="uc-title">Use Case 2: Xem Hồ Sơ Cá Nhân (My Profile Modal) & Xác Định Doanh Nghiệp Trực Thuộc</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p0">Ưu tiên: P0 · Trải nghiệm người dùng</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Mọi tài khoản (Sales, Quản lý, Admin, Super Admin)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra tính năng xem hồ sơ cá nhân nhanh trên thanh Topbar, xác định chính xác tài khoản đang đăng nhập thuộc Doanh nghiệp (Workspace) nào, mã định danh hệ thống (Slug), phòng ban và cấp bậc vai trò.
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li>Đăng nhập bằng tài khoản Sales: <code>sale@alphatech.ai.vn</code> / <code>12345678</code>.</li>
+      <li>Quan sát thanh điều hướng trên cùng (Topbar):
+        <br>• Góc trên bên trái: Tên doanh nghiệp hiển thị rõ là <strong>"Alphatech"</strong>.
+        <br>• Góc trên bên phải: Menu chuyển vai hiển thị <strong>"Kinh doanh · Bán hàng"</strong>, kế bên là nút có icon <code>👤 Trần Văn Nam</code>.
+      </li>
+      <li>Bấm chuột trực tiếp vào nút <strong>👤 Trần Văn Nam</strong> trên Topbar.</li>
+      <li>Quan sát cửa sổ popup <strong>"Thông Tin Hồ Sơ Cá Nhân"</strong> xuất hiện:
+        <br>• Họ và tên: <code>Trần Văn Nam</code> · Email: <code>sale@alphatech.ai.vn</code>
+        <br>• Cấp bậc: Huy hiệu <strong>💼 Nhân viên Kinh doanh</strong>
+        <br>• Doanh nghiệp trực thuộc: <strong>Alphatech</strong> (Mã Workspace: <code>default</code>)
+        <br>• Phòng ban & Vai trò: 🏛️ <strong>Kinh doanh (sales)</strong> — Bán hàng
+      </li>
+      <li>Bấm nút <strong>✕</strong> hoặc <strong>Đóng</strong> để đóng popup.</li>
+      <li>Đăng xuất, sau đó đăng nhập bằng tài khoản <code>quan-ly@test.vn</code> $
+ightarrow$ Bấm vào nút <strong>👤 Quản lý Bán hàng (Demo)</strong> $
+ightarrow$ Xác nhận thấy: Doanh nghiệp Alphatech, vai trò Quản lý Bộ phận.</li>
+      <li>Đăng nhập bằng Super Admin <code>taminhquan182@gmail.com</code> $
+ightarrow$ Bấm vào tên $
+ightarrow$ Xác nhận thấy: <strong>⭐ Super Admin (Quản trị Nền tảng)</strong>, Doanh nghiệp: Hệ thống Quản trị Nền tảng Minne SaaS.</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        Mọi nhân viên và quản lý có thể nhanh chóng tra cứu thông tin hồ sơ của chính mình chỉ với 1 cú click trên thanh Topbar, phân biệt rõ ràng Doanh nghiệp mình đang làm việc và quyền hạn được phân bổ.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 3 -->
+  <article class="uc-card" id="uc-3">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-3" onchange="toggleUC(3)">
+        <div>
+          <div class="uc-title">Use Case 3: Tải File mẫu Chuẩn & Import Khách hàng Khắc phục Mất Số 0 SĐT</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p0">Ưu tiên: P0 · Thu thập dữ liệu</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Kinh doanh hoặc Admin</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra thuật toán Auto-Heal số điện thoại di động Việt Nam 9 chữ số bị Excel cắt mất số 0 (`912345678` $
+ightarrow$ `+84912345678`), hỗ trợ tiền tố `'09...`, và định dạng cột chuẩn "Doanh thu dự kiến".
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li>Đăng nhập tài khoản Sales: <code>sale@alphatech.ai.vn</code>.</li>
+      <li>Tại màn hình <strong>Bảng công việc</strong>, bấm nút <strong>📥 Nhập Excel / CSV</strong> ở góc trên bên phải.</li>
+      <li>Trong cửa sổ popup, bấm nút <strong>Tải file CSV mẫu chuẩn</strong>.</li>
+      <li>Mở file tải về kiểm tra: Tiêu đề cột là <code>Doanh thu dự kiến</code> (thay vì "Doanh số") và số điện thoại mẫu có dấu nháy bảo vệ <code>'0912345678</code>.</li>
+      <li>Tạo một file kiểm thử hoặc nhập trực tiếp 1 dòng có số điện thoại bị mất số 0: <code>Tên: Trần Anh Tuấn, SĐT: 988776655, Công ty: Tân Á Đại Thành, Doanh thu: 45000000</code>.</li>
+      <li>Kéo thả file vào khung tải lên hoặc chọn file $
+ightarrow$ Xem bảng đối soát dữ liệu (Preview 5 dòng) $
+ightarrow$ Bấm <strong>Xác nhận nhập</strong>.</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        Hệ thống tự động thông minh nhận diện đầu số di động Viettel/Vina/Mobi 9 chữ số và tự động bù số 0 chuẩn quốc tế: <code>+84988776655</code>. Khách hàng được tạo thành công vào hệ thống, không còn bị báo lỗi sai định dạng số điện thoại.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 4 -->
+  <article class="uc-card" id="uc-4">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-4" onchange="toggleUC(4)">
+        <div>
+          <div class="uc-title">Use Case 4: Tiếp nhận Cuộc gọi Hotline & Tạo Lead Mới Vào "Hôm nay"</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p0">Ưu tiên: P0 · Trực chiến</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Nhân viên Kinh doanh</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra modal tạo lead thủ công đa ngành, giao diện thuần Việt 100% và cơ chế xếp lead mới vào danh sách ưu tiên xử lý ngay trong ngày ("Hôm nay" thay vì "Sắp tới").
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li>Tại <strong>Bảng công việc</strong>, bấm nút <strong>+ Tạo Lead Mới</strong> màu xanh dương.</li>
+      <li>Nhập thông tin tiếp nhận từ cuộc gọi:
+        <br>• Tên khách hàng: <code>Chị Lê Thanh Hương</code>
+        <br>• Số điện thoại: <code>0912987654</code> (hoặc gõ <code>912987654</code>)
+        <br>• Tên đơn vị / Doanh nghiệp: <code>Trường Quốc Tế Gateway</code>
+        <br>• Nhu cầu / Sản phẩm: <code>Tư vấn triển khai gói thiết bị văn phòng và phần mềm</code>
+        <br>• Doanh thu dự kiến: <code>65.000.000đ</code>
+        <br>• Người phụ trách: Để trống (để cả team cùng thấy) hoặc chọn gán cho bản thân.
+      </li>
+      <li>Bấm nút <strong>Tạo Lead</strong>.</li>
+      <li>Chuyển về chế độ xem <strong>⚡ Việc Cần Làm Hôm Nay (To-Do SLA Board)</strong> để kiểm tra vị trí lead.</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        • Lead được tạo thành công ngay tức khắc.<br>
+        • Lead mới xuất hiện ngay tại cột <strong>"Hôm nay / Cần liên hệ ngay"</strong>, tuyệt đối không bị rơi nhầm vào cột "Sắp tới" gây trôi việc.<br>
+        • Toàn bộ form và thông báo hiển thị tiếng Việt chuẩn đa ngành.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 5 -->
+  <article class="uc-card" id="uc-5">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-5" onchange="toggleUC(5)">
+        <div>
+          <div class="uc-title">Use Case 5: Phễu Bán Hàng (Pipeline Kanban) & Kỷ luật "Không Mất Lead"</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p0">Ưu tiên: P0 · Đột phá cốt lõi</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Kinh doanh & Quản lý</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Khắc phục triệt để hiện tượng "Lead biến mất" sau khi nhân viên cập nhật lịch hẹn tiếp theo. Cung cấp 2 chế độ xem song song: Phễu bán hàng (Pipeline Kanban 6 giai đoạn) và Bảng việc hôm nay (To-Do SLA).
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li>Tại <strong>Bảng công việc</strong>, bấm nút <strong>📊 Phễu Bán Hàng (Pipeline Kanban)</strong>.</li>
+      <li>Quan sát 6 cột giai đoạn chuẩn: <code>[Mới tiếp nhận]</code> $
+ightarrow$ <code>[Đang tư vấn]</code> $
+ightarrow$ <code>[Đã gửi báo giá]</code> $
+ightarrow$ <code>[Đang đàm phán]</code> $
+ightarrow$ <code>[Chốt thành công]</code> $
+ightarrow$ <code>[Thất bại]</code>.</li>
+      <li>Xem tổng số Deal và tổng Doanh thu dự kiến được tính tự động ở đầu từng cột.</li>
+      <li>Trên thẻ một khách hàng ở cột <code>[Mới tiếp nhận]</code>, bấm dropdown chuyển giai đoạn sang <code>[Đang tư vấn]</code>. Thẻ nhảy ngay sang cột mới.</li>
+      <li>Bấm vào tiêu đề Lead để mở <strong>Ngữ cảnh Lead (Customer Context)</strong>.</li>
+      <li>Tại khung <em>"Ghi kết quả tương tác"</em>: Chọn hoạt động Gọi điện, outcome là <strong>Đã kết nối</strong>, điền Kế hoạch tiếp theo là <code>Gửi bảng báo giá chi tiết qua email</code>, chọn ngày hẹn là <strong>3 ngày nữa</strong>.</li>
+      <li>Bấm <strong>Lưu kết quả & Kế hoạch tiếp theo</strong> $
+ightarrow$ Bấm nút <strong>← Quay lại Bảng công việc</strong>.</li>
+      <li>Kiểm tra cột <code>[Đang tư vấn]</code> trên Phễu bán hàng.</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        • Lead <strong>VẪN NẰM NGUYÊN VẸN</strong> tại cột <code>[Đang tư vấn]</code> của Phễu bán hàng, không bao giờ bị biến mất!<br>
+        • Thẻ lead hiển thị huy hiệu ngày hẹn màu xanh (Đã có kế hoạch tiếp theo) kèm thông tin doanh thu dự kiến.<br>
+        • Khi bấm chuyển sang nút <strong>⚡ Việc Cần Làm Hôm Nay</strong>: Lead sẽ xuất hiện đúng tại cột "Sắp tới" (vì hạn xử lý là 3 ngày sau). Hai góc nhìn bổ trợ hoàn hảo cho nhau.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 6 -->
+  <article class="uc-card" id="uc-6">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-6" onchange="toggleUC(6)">
+        <div>
+          <div class="uc-title">Use Case 6: Kỷ luật "Next Action" & Đề xuất Thông minh từ Minne AI Copilot</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p0">Ưu tiên: P0 · Kỷ luật bán hàng</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Nhân viên Kinh doanh</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra cơ chế cảnh báo bắt buộc có Kế hoạch tiếp theo (Next Action), xóa sạch chuỗi tiếng Anh thô nội bộ, và duyệt đề xuất tự động từ Minne Copilot.
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li>Mở chi tiết một Lead bất kỳ.</li>
+      <li>Tại form Ghi kết quả tương tác: Chọn outcome là <code>Không nghe máy</code> hoặc <code>Máy bận</code>, nhưng <strong>để trống</strong> ô Kế hoạch tiếp theo $
+ightarrow$ Bấm Lưu.</li>
+      <li>Quan sát banner cảnh báo màu vàng xuất hiện: <code>Cảnh báo: Chưa đặt kế hoạch tiếp theo!</code> (Không còn chuỗi tiếng Anh <code>warning missing_next_action</code>).</li>
+      <li>Xem mục <strong>Việc cần lưu ý</strong> và <strong>Minne đề xuất</strong> ở cột bên phải: Kiểm tra chuỗi hiển thị đã đổi sang tiếng Việt (ví dụ: <code>Quy tắc hệ thống</code> thay vì <code>deterministic-fallback</code>).</li>
+      <li>Nếu có đề xuất hành động từ Minne: Bấm <strong>Xem trước và quyết định</strong> $
+ightarrow$ Duyệt áp dụng đề xuất.</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        Giao diện 100% tiếng Việt chuyên nghiệp. Nhân viên bán hàng được nhắc nhở kỷ luật không bao giờ bỏ quên khách hàng sau mỗi cuộc gọi.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 7 -->
+  <article class="uc-card" id="uc-7">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-7" onchange="toggleUC(7)">
+        <div>
+          <div class="uc-title">Use Case 7: Đồng bộ Tự Động 2 Chiều với Google Sheets qua Inbound Webhook</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p0">Ưu tiên: P0 · Tích hợp tự động</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Quản lý (quan-ly@test.vn) hoặc Tenant Admin</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra giải pháp đồng bộ dữ liệu trực tiếp 2 chiều từ Google Sheets vào Minne theo thời gian thực qua Inbound Webhook API, không cần thao tác xuất/nhập file thủ công.
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li>Đăng nhập tài khoản Quản lý: <code>quan-ly@test.vn</code> / <code>12345678</code> (hoặc tài khoản Tenant Admin).</li>
+      <li>Bấm vào menu <strong>Cài đặt</strong> trên thanh menu bên trái.</li>
+      <li>Cuộn xuống khối <strong>"Đồng bộ Google Sheets qua Webhook"</strong>.</li>
+      <li>Kiểm tra đường link Webhook: <code>https://minne.alphatech.ai.vn/api/sales/webhook/google-sheets?key=minne_gsheet_sync</code>.</li>
+      <li>Bấm nút <strong>Sao chép URL Webhook</strong> và <strong>Sao chép đoạn mã Apps Script</strong> (sẵn sàng dán vào Google Sheets của công ty).</li>
+      <li>Bấm nút <strong>⚡ Thử nghiệm gửi dữ liệu mẫu</strong> ngay trên giao diện.</li>
+      <li>Vào lại <strong>Bảng công việc</strong> để kiểm tra kết quả tiếp nhận.</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        • Hộp kết quả báo: <code>✓ Đã tiếp nhận thành công 1 khách hàng từ Google Sheets (Tạo 1 lead thành công)</code>.<br>
+        • Lead <em>"Khách Test Google Sheets"</em> xuất hiện ngay trên Bảng công việc với doanh thu 88.000.000đ và ghi chú đồng bộ tự động.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 8 -->
+  <article class="uc-card" id="uc-8">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-8" onchange="toggleUC(8)">
+        <div>
+          <div class="uc-title">Use Case 8: Màn hình "Việc cần quan tâm" (Exception Triage) Cho Quản Lý</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p0">Ưu tiên: P0 · Điều hành</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Quản lý (quan-ly@test.vn)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra trung tâm điều hành ngoại lệ và cứu lead sắp mất: phát hiện lead quá hạn SLA phản hồi lần đầu, lead trôi việc, lead chưa có chủ và thực hiện thao tác can thiệp quản lý.
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li>Đăng nhập tài khoản Quản lý: <code>quan-ly@test.vn</code> / <code>12345678</code>.</li>
+      <li>Bấm vào menu <strong>"Việc cần quan tâm"</strong> (đã đổi tên chuẩn kinh doanh từ "Ngoại lệ").</li>
+      <li>Kiểm tra bộ lọc: Loại việc (Chưa có người phụ trách, Quá hạn phản hồi lần đầu, Chưa có kế hoạch tiếp theo, Công việc quá hạn, Lead lâu ngày chưa tương tác), Cấp độ nghiêm trọng, Phòng ban.</li>
+      <li>Tại một bản ghi lead chưa có người phụ trách: Chọn một nhân viên trong ô <em>"Gán owner mới"</em> $
+ightarrow$ nhập lý do $
+ightarrow$ bấm <strong>Giao việc</strong> (Assign).</li>
+      <li>Tại một bản ghi lead cần theo dõi thêm: Chọn thời gian mở lại $
+ightarrow$ nhập lý do $
+ightarrow$ bấm <strong>Tạm hoãn</strong> (Snooze).</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        Giao diện hiển thị rõ ràng, thuật ngữ thuần kinh doanh. Các thao tác Giao việc, Tạm hoãn, Đóng việc được ghi nhận vào nhật ký kiểm toán và cập nhật trạng thái ngay lập tức.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 9 -->
+  <article class="uc-card" id="uc-9">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-9" onchange="toggleUC(9)">
+        <div>
+          <div class="uc-title">Use Case 9: Nạp Tri Thức & Khám Phá Bản Đồ Tri Thức Doanh Nghiệp (Knowledge Graph View)</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p1">Ưu tiên: P1 · Hệ thống hóa Tri thức</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Quản lý & Kinh doanh</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra luồng nạp tri thức công ty (Sản phẩm, Dịch vụ, Chính sách, Quy định bảo hành), hệ thống hóa dữ liệu bằng Wikilinks <code>[[...]]</code> và trải nghiệm đồ thị mạng nhện tương tác 60FPS (tương tự Obsidian Graph View).
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li><strong>Nạp tri thức mới:</strong> Vào menu <strong>"Tài liệu" (Sources)</strong> $
+ightarrow$ Bấm nút <strong>+ Nạp tài liệu mới</strong>.
+        <br>• Chọn loại: <em>Tài liệu nghiệp vụ / Ghi chú Wiki Markdown</em>.
+        <br>• Nhập tiêu đề: <code>Chính sách Chiết khấu Máy in Công nghiệp 2026</code>.
+        <br>• Nhập nội dung có liên kết chéo: <code>Áp dụng cho [[Máy In Ricoh Pro]] và các đối tác thuộc [[Phòng Kinh Doanh]]. Chiết khấu 15% khi thanh toán trong 7 ngày.</code>
+        <br>• Bấm <strong>Xác Nhận Nạp Vào Hệ Thống</strong>.
+      </li>
+      <li><strong>Trải nghiệm Bản đồ tri thức:</strong> Bấm vào menu <strong>"Bản đồ tri thức"</strong> trên thanh menu bên trái.</li>
+      <li>Quan sát không gian đồ thị Canvas tương tác 60FPS với các hạt Node và đường liên kết đàn hồi:
+        <br>• Dùng con lăn chuột để <strong>Phóng to / Thu nhỏ</strong> (Zoom In/Out).
+        <br>• Dùng chuột bấm giữ và <strong>kéo thả</strong> các Node để xem lực tương tác vật lý.
+        <br>• Bấm chuột vào một hạt Node (màu xanh lá: Phòng ban, màu xanh dương: Tài liệu nguồn, màu tím: Sản phẩm / Chính sách).
+        <br>• Xem ngăn tra cứu chi tiết (Node Inspector Drawer) hiển thị ở góc dưới bên phải.
+      </li>
+      <li><strong>Truy cập nhanh tri thức:</strong> Vào menu <strong>"Hỏi tri thức"</strong> $
+ightarrow$ Gõ câu hỏi: <em>"Chính sách chiết khấu máy in Ricoh như thế nào?"</em> $
+ightarrow$ AI đọc dữ liệu và trích dẫn câu trả lời chính xác.</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        Đồ thị hoạt động mượt mà 60FPS, trực quan, không giật lag. Giám đốc và Quản lý nắm bắt toàn cảnh mối liên kết giữa Sản phẩm, Chính sách, Tài liệu và Phòng ban một cách sinh động, dễ hiểu.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 10 -->
+  <article class="uc-card" id="uc-10">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-10" onchange="toggleUC(10)">
+        <div>
+          <div class="uc-title">Use Case 10: Quản Trị Multi-Tenant SaaS & Phân Tách Quyền Riêng Tư Doanh Nghiệp</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p1">Ưu tiên: P1 · Kiến trúc SaaS & Privacy</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Super Admin & Tenant Admin</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra ranh giới bảo mật nghiêm ngặt giữa Super Admin (Chủ sở hữu nền tảng SaaS) và Admin Doanh nghiệp (Client Company Admin). Super Admin chỉ quản lý tổng quan các Workspace công ty khách hàng; danh sách nhân viên chi tiết và dữ liệu nghiệp vụ được bảo mật độc lập 100% trong nội bộ từng công ty.
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li><strong>Kiểm tra quyền Super Admin:</strong> Đăng nhập tài khoản <code>taminhquan182@gmail.com</code>.
+        <br>• Quan sát menu hiển thị: <strong>"Quản trị Nền tảng"</strong>, <strong>"Cài đặt Nền tảng"</strong>, <strong>"Nhật ký Hệ thống"</strong> (toàn bộ module tác nghiệp của doanh nghiệp đã được ẩn).
+        <br>• Vào mục Quản trị Nền tảng: Quan sát 3 thẻ chỉ số KPI tổng quan (Tổng số Doanh nghiệp khách hàng, Tổng tài khoản nhân sự toàn hệ thống, Tổng Lead bán hàng phục vụ).
+        <br>• Bên dưới là bảng <strong>🏢 Danh mục Khách hàng Doanh nghiệp (Multi-Tenant Workspaces)</strong>.
+        <br>• Xác nhận: <strong>KHÔNG</strong> nhìn thấy danh sách nhân sự chi tiết của các công ty khách hàng (bảo đảm quyền riêng tư nội bộ).
+      </li>
+      <li>Bấm nút <strong>+ Tạo Doanh nghiệp Dùng thử</strong> $
+ightarrow$ Điền thông tin:
+        <br>• Tên doanh nghiệp: <code>Tập Đoàn Quốc Tế Hòa Bình</code>
+        <br>• Mã định danh Slug: <code>hoa-binh-corp</code> (tự sinh)
+        <br>• Admin đại diện: <code>Nguyễn Văn Bình</code> · Thời hạn: <code>30 ngày</code>
+        <br>• Email đăng nhập Admin: <code>admin@hoabinh.vn</code> · Mật khẩu: <code>HoaBinh2026*</code>
+        <br>• Bấm <strong>Khởi Tạo Workspace</strong> $
+ightarrow$ Doanh nghiệp mới xuất hiện trên danh sách với số nhân sự ban đầu là 1 người.
+      </li>
+      <li>Bấm nút <strong>+ Gia hạn</strong> $
+ightarrow$ Nhập thêm <code>15</code> ngày $
+ightarrow$ Xác nhận thời hạn tăng thành 45 ngày.</li>
+      <li><strong>Kiểm tra quyền Admin Doanh nghiệp:</strong> Bấm <strong>Đăng xuất</strong> $
+ightarrow$ Đăng nhập bằng tài khoản vừa tạo: <code>admin@hoabinh.vn</code> / <code>HoaBinh2026*</code>.
+        <br>• Quan sát tên thương hiệu trên thanh trên cùng: hiển thị đúng tên <strong>"Tập Đoàn Quốc Tế Hòa Bình"</strong>.
+        <br>• Quan sát menu hiển thị: <strong>"Quản trị Doanh nghiệp"</strong>.
+        <br>• Vào mục này: Thấy tiêu đề <em>"Quản trị Doanh nghiệp: Tập Đoàn Quốc Tế Hòa Bình"</em>, bảng <strong>Quản lý Nhân sự & Phân quyền Nội bộ</strong> (chỉ có duy nhất nhân sự của công ty Hòa Bình) và bảng <strong>Phòng ban Doanh nghiệp</strong>.
+        <br>• <strong>Bảo mật:</strong> Hoàn toàn <strong>KHÔNG</strong> thấy bảng Quản lý các Tenant khác của Super Admin, không thấy nút tạo tenant hay tạo demo.
+      </li>
+      <li>Bấm <strong>+ Thêm nhân viên</strong> trong công ty Hòa Bình $
+ightarrow$ Nhập email <code>sales.hoabinh@test.vn</code>, tên hiển thị, mật khẩu $
+ightarrow$ Tạo thành công. Đăng xuất và đăng nhập lại bằng Super Admin: Super Admin chỉ thấy tổng số nhân sự của Hòa Bình tăng lên 2 người, không can thiệp vào danh sách này.</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        • <strong>Tách bạch 100% vai trò:</strong> Super Admin quản trị nền tảng SaaS, kiểm soát quota và thời hạn dùng thử; Tenant Admin quản trị toàn quyền nội bộ nhân sự và dữ liệu của công ty mình.<br>
+        • <strong>Zero Data Leakage:</strong> Dữ liệu nhân sự, khách hàng, doanh thu và tri thức giữa các công ty hoàn toàn độc lập, bảo mật tuyệt đối theo chuẩn Multi-Tenant SaaS.
+      </div>
+    </div>
+  </article>
+
+  <!-- Use Case 11 -->
+  <article class="uc-card" id="uc-11">
+    <div class="uc-header">
+      <div class="uc-title-group">
+        <input type="checkbox" class="uc-checkbox" id="check-11" onchange="toggleUC(11)">
+        <div>
+          <div class="uc-title">Use Case 11: Chốt Đơn & Đẩy Đơn Hàng Sang Odoo ERP Bán Hàng</div>
+          <div class="uc-meta-tags" style="margin-top:6px">
+            <span class="uc-pill uc-pill-p1">Ưu tiên: P1 · Khép vòng bán hàng</span>
+            <span class="uc-pill uc-pill-role">Vai trò: Nhân viên Kinh doanh</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="uc-desc">
+      Kiểm tra tích hợp chốt đơn 2 chiều từ Minne Control Plane sang hệ thống Odoo ERP qua giao thức chuẩn XML-RPC, loại bỏ thao tác nhập liệu kép.
+    </p>
+    <div class="steps-title">Các bước thực hiện:</div>
+    <ol class="steps-list">
+      <li>Đăng nhập tài khoản Sales: <code>sale@alphatech.ai.vn</code>.</li>
+      <li>Mở chi tiết một Lead đang ở giai đoạn đàm phán hoặc chốt đơn (ví dụ có giá trị doanh thu 150.000.000đ).</li>
+      <li>Tại thẻ <strong>Tổng quan</strong>, quan sát nút bấm: <strong>🛒 Tạo đơn hàng Odoo ERP</strong>.</li>
+      <li>Bấm nút <strong>Tạo đơn hàng Odoo ERP</strong>.</li>
+      <li>Hệ thống gửi lệnh đồng bộ sang Odoo container (idempotent XML-RPC).</li>
+    </ol>
+    <div class="expected-box">
+      <div class="expected-title">✓ Kết quả mong đợi:</div>
+      <div class="expected-desc">
+        Hệ thống tạo thành công bản ghi <code>sale.order</code> trên Odoo và trả về mã đơn hàng ERP (ví dụ: <code>SO0025</code>). Huy hiệu đơn hàng xuất hiện trên thẻ khách hàng để tiện theo dõi trạng thái giao vận và thanh toán.
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer>
+    <div style="font-weight:600;color:var(--text-muted);margin-bottom:6px">Minne Control Plane · Enterprise AI Agent System</div>
+    <div>Build 2026.09.07-v4 · Verified on Production https://minne.alphatech.ai.vn</div>
+  </footer>
+
+</div>
+
+<script>
+  // Lưu trạng thái checkbox vào LocalStorage
+  const STORAGE_KEY = 'minne_test_use_cases_v033';
+  const TOTAL_UC = 11;
+
+  function loadProgress() {
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch (e) {}
+
+    let count = 0;
+    for (let i = 1; i <= TOTAL_UC; i++) {
+      const cb = document.getElementById('check-' + i);
+      const card = document.getElementById('uc-' + i);
+      if (cb) {
+        cb.checked = Boolean(saved[i]);
+        if (cb.checked) {
+          count++;
+          card.classList.add('completed');
+        } else {
+          card.classList.remove('completed');
+        }
+      }
+    }
+    updateProgressUI(count);
+  }
+
+  function toggleUC(index) {
+    const cb = document.getElementById('check-' + index);
+    const card = document.getElementById('uc-' + index);
+    if (cb.checked) {
+      card.classList.add('completed');
+    } else {
+      card.classList.remove('completed');
+    }
+
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch (e) {}
+    saved[index] = cb.checked;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+
+    let count = 0;
+    for (let i = 1; i <= TOTAL_UC; i++) {
+      if (document.getElementById('check-' + i)?.checked) count++;
+    }
+    updateProgressUI(count);
+  }
+
+  function updateProgressUI(count) {
+    document.getElementById('completed-count').textContent = count;
+    const percent = Math.round((count / TOTAL_UC) * 100);
+    document.getElementById('progress-fill').style.width = percent + '%';
+  }
+
+  function resetProgress() {
+    if (!confirm('Bạn có chắc muốn đặt lại toàn bộ tiến độ kiểm thử?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    loadProgress();
+  }
+
+  function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Đã sao chép: ' + text);
+    }).catch(() => {
+      prompt('Sao chép thông tin:', text);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', loadProgress);
+</script>
+
+</body>
+</html>

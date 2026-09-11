@@ -1,0 +1,1366 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Báo Cáo Nghiệm Thu & Kiểm Thử Toàn Diện — Minne Control Plane v0.3.3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --surface-card: #141d2e;
+      --surface-elevated: #1a2438;
+      --border: #293548;
+      --border-accent: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.2);
+      --success-bg: rgba(16, 185, 129, 0.1);
+      --warn: #f59e0b;
+      --warn-bg: rgba(245, 158, 11, 0.1);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.1);
+      --purple: #a855f7;
+      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 8px 15px -6px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding-bottom: 80px;
+    }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 30px 20px; }
+
+    /* Top Notice Bar */
+    .top-notice {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(56, 189, 248, 0.15));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      font-size: 13.5px;
+    }
+    .top-notice .badge-internal {
+      background: #ef4444;
+      color: #fff;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    /* Header Banner */
+    .header-banner {
+      background: linear-gradient(135deg, #182234 0%, #0f172a 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .header-banner::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 30px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+      line-height: 1.3;
+    }
+    .subtitle {
+      font-size: 15.5px;
+      color: var(--text-muted);
+      max-width: 980px;
+      line-height: 1.6;
+    }
+
+    /* Executive Metrics Dashboard */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .metric-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .metric-val {
+      font-size: 32px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .metric-val.val-green { color: var(--success); }
+    .metric-val.val-blue { color: var(--accent); }
+    .metric-sub { font-size: 12.5px; color: var(--text-faint); }
+    .metric-title { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+    /* Layout: Sidebar TOC + Main Content */
+    .layout-wrapper {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* TOC Sidebar */
+    .toc-sticky {
+      position: sticky;
+      top: 24px;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+    }
+    .toc-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .toc-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+      margin-bottom: 4px;
+      line-height: 1.35;
+    }
+    .toc-link span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--surface);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .toc-link:hover {
+      background: var(--surface-hover);
+      color: #fff;
+    }
+
+    /* Use Case Cards */
+    .uc-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 30px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: border-color 0.2s ease;
+    }
+    .uc-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .uc-header {
+      padding: 22px 28px;
+      background: var(--surface-elevated);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .uc-title-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .uc-badge {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+    }
+    .uc-header h2 {
+      font-size: 19px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+    }
+
+    .uc-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+    .status-passed {
+      background: var(--success-bg);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--success);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .uc-submeta {
+      padding: 12px 28px;
+      background: rgba(15, 23, 42, 0.6);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .submeta-item strong { color: var(--text); }
+    .priority-pill {
+      background: var(--surface);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      color: var(--warn);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+    .verdict-passed {
+      color: var(--success);
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .uc-body {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .block-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-block p {
+      color: var(--text);
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+
+    .steps-list {
+      padding-left: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .steps-list li { line-height: 1.55; }
+
+    /* Results Grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .result-box {
+      border-radius: var(--radius-md);
+      padding: 16px;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+    .expected-box {
+      background: rgba(56, 189, 248, 0.06);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+    .expected-box .res-label {
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
+      font-size: 12.5px;
+      text-transform: uppercase;
+    }
+    .actual-box {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .actual-box .res-label {
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 6px;
+      font-size: 12.5px;
+      text-transform: uppercase;
+    }
+
+    /* Screenshots Section */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 10px;
+    }
+    .screenshot-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .screenshot-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+    .img-wrapper {
+      position: relative;
+      height: 200px;
+      background: #000;
+      overflow: hidden;
+    }
+    .img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      transition: transform 0.3s ease;
+    }
+    .screenshot-card:hover .img-wrapper img {
+      transform: scale(1.03);
+    }
+    .zoom-hint {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      backdrop-filter: blur(4px);
+    }
+    .screenshot-card .caption {
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface-card);
+      line-height: 1.45;
+    }
+
+    /* Lightbox Modal */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 7, 18, 0.94);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      padding: 24px;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox-img {
+      max-width: 95vw;
+      max-height: 85vh;
+      border-radius: 8px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      object-fit: contain;
+    }
+    .lightbox-caption {
+      color: #fff;
+      font-size: 15px;
+      margin-top: 14px;
+      font-weight: 500;
+      text-align: center;
+      max-width: 800px;
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .lightbox-close:hover { background: #ef4444; }
+
+    /* Test Environment Card */
+    .env-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 30px;
+      font-size: 13.5px;
+    }
+    .env-item { display: flex; flex-direction: column; gap: 4px; }
+    .env-item strong { color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
+    .env-item span { color: #fff; font-family: var(--font-mono); font-size: 13px; }
+
+    @media (max-width: 980px) {
+      .layout-wrapper { grid-template-columns: 1fr; }
+      .toc-sticky { display: none; }
+      .results-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Top Internal Notice -->
+    <div class="top-notice">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="badge-internal">Nội Bộ / Kiểm Thử</span>
+        <span>Tài liệu kiểm thử nghiệm thu nội bộ hệ thống — Không phổ biến ra môi trường công cộng.</span>
+      </div>
+      <div style="font-family:var(--font-mono);color:var(--accent);">Build 2026.09.07 · v0.3.3-controlplane</div>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="header-banner">
+      <span class="badge">BÁO CÁO NGHIỆM THU TỰ ĐỘNG (END-TO-END AUTOMATED TEST REPORT)</span>
+      <h1>Báo Cáo Nghiệm Thu & Kiểm Thử Toàn Diện 11 Use Case</h1>
+      <p class="subtitle">
+        Báo cáo kết quả kiểm thử tự động toàn diện qua trình duyệt (Microsoft Edge Puppeteer) dựa trên bộ kịch bản kiểm thử chuẩn <code>BO-USE-CASE-TEST-MINNE-V0.3.3.html</code>. Xác thực phân quyền Role-based Access, bảo mật Multi-Tenant SaaS, chống rò rỉ dữ liệu, phễu bán hàng Pipeline Kanban, kỷ luật Next Action, Webhook Google Sheets 2 chiều, trung tâm điều hành ngoại lệ và đồng bộ ERP Odoo.
+      </p>
+
+      <!-- Executive Dashboard Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-title">TỔNG USE CASE KIỂM THỬ</div>
+          <div class="metric-val val-blue">11 <span style="font-size:16px;color:var(--text-muted);">Use Cases</span></div>
+          <div class="metric-sub">Phủ 100% phạm vi v0.3.3</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">KẾT QUẢ ĐẠT CHUẨN (PASS)</div>
+          <div class="metric-val val-green">11 <span style="font-size:16px;color:var(--text-muted);">/ 11</span></div>
+          <div class="metric-sub">Không có ca lỗi hoặc cảnh báo</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">TỶ LỆ THÀNH CÔNG</div>
+          <div class="metric-val val-green">100%</div>
+          <div class="metric-sub">Đạt điều kiện phát hành Release</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">ẢNH CHỤP MINH CHỨNG</div>
+          <div class="metric-val">20 <span style="font-size:16px;color:var(--text-muted);">ảnh Hi-DPI</span></div>
+          <div class="metric-sub">Chụp thực tế qua Edge headless</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Environment & Credentials Info -->
+    <div class="env-grid">
+      <div class="env-item">
+        <strong>Môi trường thực thi:</strong>
+        <span>Local Testbed (http://127.0.0.1:8182)</span>
+      </div>
+      <div class="env-item">
+        <strong>Công cụ tự động hóa:</strong>
+        <span>Puppeteer-Core + Microsoft Edge v120+ (Hi-DPI 1.5x)</span>
+      </div>
+      <div class="env-item">
+        <strong>Tài khoản Super Admin:</strong>
+        <span>taminhquan182@gmail.com (Minhquan001*)</span>
+      </div>
+      <div class="env-item">
+        <strong>Tài khoản Quản lý:</strong>
+        <span>quan-ly@test.vn (12345678)</span>
+      </div>
+      <div class="env-item">
+        <strong>Tài khoản Bán hàng:</strong>
+        <span>sale@alphatech.ai.vn (12345678)</span>
+      </div>
+      <div class="env-item">
+        <strong>Thời gian kiểm thử:</strong>
+        <span>2026-09-07 22:12:45 ICT</span>
+      </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="layout-wrapper">
+      <!-- Sidebar Quick Jump -->
+      <aside class="toc-sticky">
+        <div class="toc-title">
+          <span>MỤC LỤC USE CASE</span>
+          <span style="color:var(--success);">11/11 PASS</span>
+        </div>
+        <a href="#uc-01" class="toc-link"><span>UC-01</span> Phân Quyền Vai Trò &amp; Cô Lập Menu (Khắc...</a><a href="#uc-02" class="toc-link"><span>UC-02</span> Minh Bạch Hồ Sơ Cá Nhân &amp; Định Danh Do...</a><a href="#uc-03" class="toc-link"><span>UC-03</span> Nhập Khách Hàng Excel/CSV &amp; Tự Động Ch...</a><a href="#uc-04" class="toc-link"><span>UC-04</span> Thêm Khách Hàng Thủ Công Trực Tiếp Vào...</a><a href="#uc-05" class="toc-link"><span>UC-05</span> Phễu Bán Hàng 6 Giai Đoạn (Pipeline Ka...</a><a href="#uc-06" class="toc-link"><span>UC-06</span> Kỷ Luật &quot;Next Action&quot; Bắt Buộc &amp; Đề Xu...</a><a href="#uc-07" class="toc-link"><span>UC-07</span> Đồng Bộ 2 Chiều Google Sheets Qua Inbo...</a><a href="#uc-08" class="toc-link"><span>UC-08</span> Trung Tâm Điều Hành &quot;Việc Cần Quan Tâm...</a><a href="#uc-09" class="toc-link"><span>UC-09</span> Nạp Tri Thức &amp; Bản Đồ Tri Thức Doanh N...</a><a href="#uc-10" class="toc-link"><span>UC-10</span> Bảng Quản Trị Multi-Tenant SaaS &amp; Cơ C...</a><a href="#uc-11" class="toc-link"><span>UC-11</span> Chốt Đơn Bán Hàng &amp; Đẩy Sang ERP Odoo ...</a>
+      </aside>
+
+      <!-- Main Use Cases -->
+      <main class="main-content">
+        
+        <article class="uc-card" id="uc-01">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-01</span>
+              <h2>Phân Quyền Vai Trò &amp; Cô Lập Menu (Khắc phục lỗi 403 khi Đăng xuất / Đăng nhập)</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Auth &amp; RBAC / Multi-Tenant Isolation</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P0 - Nghiêm Trọng</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Đảm bảo tài khoản Super Admin tách biệt hoàn toàn khỏi dữ liệu nghiệp vụ của Doanh nghiệp. Khắc phục triệt để lỗi 403 Forbidden sau khi đăng xuất tài khoản quản trị rồi đăng nhập tài khoản nhân viên hoặc quản lý.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Đăng nhập tài khoản Super Admin (taminhquan182@gmail.com). Kiểm tra Menu bên trái.</li><li>Kiểm tra tính cô lập: Super Admin chỉ thấy 3 menu nền tảng (&#x27;Quản trị Nền tảng&#x27;, &#x27;Cài đặt Nền tảng&#x27;, &#x27;Nhật ký Hệ thống&#x27;) và tuyệt đối KHÔNG có menu nghiệp vụ của doanh nghiệp (Bảng công việc, Việc cần quan tâm, Tư vấn, Tin nhắn, Tài liệu, Bản đồ tri thức).</li><li>Đăng xuất Super Admin và ngay lập tức đăng nhập tài khoản Sales (sale@alphatech.ai.vn).</li><li>Kiểm tra không bị lỗi &#x27;Chỉ quản trị viên mới xem được mục này&#x27; (403).</li><li>Đăng xuất Sales và đăng nhập Quản lý (quan-ly@test.vn) với mật khẩu 12345678. Kiểm tra đầy đủ menu quản lý.</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Super Admin cô lập hoàn toàn (3 menu), không rò rỉ dữ liệu tenant. Chuyển đổi tài khoản mượt mà, loại bỏ triệt để lỗi 403. Nhân viên và Quản lý truy cập đúng đặc quyền.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Đạt 100%. Super Admin hiển thị đúng 3 mục menu nền tảng. Khi đăng xuất và đăng nhập sale@alphatech.ai.vn hoặc quan-ly@test.vn, hệ thống chuyển hướng vào thẳng Dashboard tương ứng không xuất hiện bất kỳ cảnh báo 403 nào.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc01_super_admin_nav.png', 'Menu Super Admin tách biệt cô lập: Chỉ 3 menu Nền tảng, không rò rỉ dữ liệu doanh nghiệp')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc01_super_admin_nav.png" alt="Menu Super Admin tách biệt cô lập: Chỉ 3 menu Nền tảng, không rò rỉ dữ liệu doanh nghiệp" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Menu Super Admin tách biệt cô lập: Chỉ 3 menu Nền tảng, không rò rỉ dữ liệu doanh nghiệp</strong></div>
+              </div>
+            
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc01_sales_login_success.png', 'Đăng nhập Nhân viên Bán hàng (sale@alphatech.ai.vn) thành công sau khi Đăng xuất — Không lỗi 403')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc01_sales_login_success.png" alt="Đăng nhập Nhân viên Bán hàng (sale@alphatech.ai.vn) thành công sau khi Đăng xuất — Không lỗi 403" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Đăng nhập Nhân viên Bán hàng (sale@alphatech.ai.vn) thành công sau khi Đăng xuất — Không lỗi 403</strong></div>
+              </div>
+            
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc01_manager_nav.png', 'Giao diện Quản lý (quan-ly@test.vn): Hiển thị Bản tin sáng, Việc cần quan tâm, Bản đồ tri thức')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc01_manager_nav.png" alt="Giao diện Quản lý (quan-ly@test.vn): Hiển thị Bản tin sáng, Việc cần quan tâm, Bản đồ tri thức" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Giao diện Quản lý (quan-ly@test.vn): Hiển thị Bản tin sáng, Việc cần quan tâm, Bản đồ tri thức</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-02">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-02</span>
+              <h2>Minh Bạch Hồ Sơ Cá Nhân &amp; Định Danh Doanh Nghiệp (Modal Hồ Sơ)</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Identity &amp; Profile Management</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P1 - Thiết Yếu</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Người dùng mọi cấp bậc (Quản lý, Bán hàng) dễ dàng kiểm tra danh tính, vai trò và thông tin doanh nghiệp mình trực thuộc ngay trong thanh điều hướng.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Đăng nhập tài khoản Quản lý (quan-ly@test.vn).</li><li>Bấm vào nút Hồ sơ / Tên người dùng trên thanh tiêu đề phía trên.</li><li>Kiểm tra thông tin trên Modal: Họ tên, Email, Vai trò hệ thống (Curator/Manager), Doanh nghiệp sở hữu (Alphatech / default), Phòng ban.</li><li>Lặp lại bước trên với tài khoản Bán hàng (sale@alphatech.ai.vn).</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Modal hiển thị rõ ràng thông tin doanh nghiệp, email, chức danh và quyền hạn mà không cần phải truy cập trang quản trị.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Modal Hồ sơ hiển thị trực quan, đầy đủ nhãn phân quyền: quan-ly@test.vn hiển thị vai trò Quản lý Bộ phận (Curator), sale@alphatech.ai.vn hiển thị Chuyên viên Bán hàng (Contributor), doanh nghiệp Alphatech (Workspace default).</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc02_profile_modal_manager.png', 'Modal Hồ sơ Quản lý: quan-ly@test.vn — Vai trò Curator, Doanh nghiệp Alphatech')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc02_profile_modal_manager.png" alt="Modal Hồ sơ Quản lý: quan-ly@test.vn — Vai trò Curator, Doanh nghiệp Alphatech" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Modal Hồ sơ Quản lý: quan-ly@test.vn — Vai trò Curator, Doanh nghiệp Alphatech</strong></div>
+              </div>
+            
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc02_profile_modal_sales.png', 'Modal Hồ sơ Bán hàng: sale@alphatech.ai.vn — Vai trò Contributor, Phòng Kinh doanh')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc02_profile_modal_sales.png" alt="Modal Hồ sơ Bán hàng: sale@alphatech.ai.vn — Vai trò Contributor, Phòng Kinh doanh" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Modal Hồ sơ Bán hàng: sale@alphatech.ai.vn — Vai trò Contributor, Phòng Kinh doanh</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-03">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-03</span>
+              <h2>Nhập Khách Hàng Excel/CSV &amp; Tự Động Chuẩn Hóa Số Điện Thoại (Auto-Heal)</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Lead Intake &amp; Data Sanitization</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P0 - Nghiêm Trọng</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Khắc phục triệt để lỗi phổ biến của Excel khi tự động cắt mất số 0 ở đầu số điện thoại (ví dụ: &#x27;988776655&#x27; thay vì &#x27;0988776655&#x27;).</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Đăng nhập Quản lý hoặc Sales, mở Bảng công việc.</li><li>Bấm &#x27;Nạp tệp Excel/CSV&#x27; để mở Modal tải tệp.</li><li>Nạp dữ liệu mẫu chứa số điện thoại bị mất số 0 (9 chữ số: &#x27;988776655&#x27;).</li><li>Bấm &#x27;Nạp dữ liệu&#x27; và kiểm tra kết quả tiếp nhận.</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Bộ lọc backend tự động phát hiện số điện thoại 9 chữ số và tự động bù số 0 ở đầu hoặc chuyển đổi chuẩn quốc tế E.164 (+84988776655), tạo lead thành công.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Dữ liệu được tiếp nhận và làm sạch chuẩn xác, hệ thống thông báo &#x27;Đã nạp 1 lead&#x27;, số điện thoại được chuẩn hóa thành +84988776655 mà không phát sinh lỗi validation.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc03_import_modal.png', 'Giao diện Modal Nhập danh sách khách hàng từ Excel/CSV kèm hướng dẫn định dạng')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc03_import_modal.png" alt="Giao diện Modal Nhập danh sách khách hàng từ Excel/CSV kèm hướng dẫn định dạng" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Giao diện Modal Nhập danh sách khách hàng từ Excel/CSV kèm hướng dẫn định dạng</strong></div>
+              </div>
+            
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc03_import_success.png', 'Kết quả tiếp nhận dữ liệu: Tự động chuẩn hóa số điện thoại bị mất số 0 thành công')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc03_import_success.png" alt="Kết quả tiếp nhận dữ liệu: Tự động chuẩn hóa số điện thoại bị mất số 0 thành công" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Kết quả tiếp nhận dữ liệu: Tự động chuẩn hóa số điện thoại bị mất số 0 thành công</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-04">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-04</span>
+              <h2>Thêm Khách Hàng Thủ Công Trực Tiếp Vào &quot;Hôm Nay&quot;</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Sales Daily Workboard</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P0 - Nghiêm Trọng</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Khi nhân viên kinh doanh tạo khách hàng mới, khách hàng phải xuất hiện ngay lập tức trên Bảng công việc Hôm nay để xử lý mà không bị thất lạc.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Tại Bảng công việc, bấm nút &#x27;+ Thêm khách hàng mới&#x27;.</li><li>Điền thông tin: Tiêu đề &#x27;Tư vấn giải pháp Minne AI&#x27;, Họ tên &#x27;Chị Lê Thanh Hương&#x27;, SĐT &#x27;0912345678&#x27;, Doanh nghiệp &#x27;Trường Quốc Tế Gateway&#x27;, Doanh thu dự kiến &#x27;65.000.000&#x27;.</li><li>Bấm &#x27;Tạo khách hàng&#x27;.</li><li>Kiểm tra danh sách mục &#x27;Hôm nay&#x27;.</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Lead được tạo ngay lập tức, tự động gán lịch hẹn/Next Action mặc định và xuất hiện ở đầu danh sách công việc Hôm nay.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Lead &#x27;Chị Lê Thanh Hương - Trường Quốc Tế Gateway&#x27; (65.000.000 đ) xuất hiện lập tức trên thẻ công việc Hôm nay với đầy đủ nút gọi, nhắn tin và ghi nhận tương tác.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc04_create_lead_form.png', 'Form nhập thông tin khách hàng mới: Tên, SĐT, Doanh nghiệp, Doanh thu dự kiến 65M')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc04_create_lead_form.png" alt="Form nhập thông tin khách hàng mới: Tên, SĐT, Doanh nghiệp, Doanh thu dự kiến 65M" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Form nhập thông tin khách hàng mới: Tên, SĐT, Doanh nghiệp, Doanh thu dự kiến 65M</strong></div>
+              </div>
+            
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc04_create_lead_today.png', 'Lead xuất hiện trực tiếp tại Bảng công việc Hôm nay sẵn sàng cho phiên tương tác')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc04_create_lead_today.png" alt="Lead xuất hiện trực tiếp tại Bảng công việc Hôm nay sẵn sàng cho phiên tương tác" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Lead xuất hiện trực tiếp tại Bảng công việc Hôm nay sẵn sàng cho phiên tương tác</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-05">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-05</span>
+              <h2>Phễu Bán Hàng 6 Giai Đoạn (Pipeline Kanban) — Không Mất Lead Khi Lưu Tương Tác</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Sales Pipeline &amp; Kanban CRM</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P0 - Nghiêm Trọng</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Kiểm tra phễu bán hàng 6 giai đoạn chuẩn mực. Khắc phục lỗi tương tác: Sau khi ghi nhận tương tác và hẹn lịch kế tiếp, Lead vẫn phải được lưu giữ nguyên vẹn trên cột Pipeline tương ứng.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Tại Bảng công việc, chuyển sang tab &#x27;Phễu bán hàng&#x27; (Kanban View).</li><li>Kiểm tra 6 cột giai đoạn: Mới tiếp nhận -&gt; Đã kết nối -&gt; Đánh giá nhu cầu -&gt; Đề xuất giải pháp -&gt; Đàm phán / Báo giá -&gt; Chốt thành công.</li><li>Bấm vào thẻ Lead để mở Customer Context.</li><li>Ghi nhận tương tác: Kết quả &#x27;Đã kết nối&#x27;, Kế hoạch tiếp theo &#x27;Gửi bảng báo giá chi tiết qua email&#x27;, Hạn xử lý &#x27;+3 ngày&#x27;.</li><li>Bấm &#x27;Lưu tương tác&#x27; và quay trở lại Kanban.</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Lead không bị biến mất khỏi Kanban, cột giai đoạn được giữ nguyên, timeline cập nhật lịch hẹn kế tiếp.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Lead tồn tại nguyên vẹn trong cột giai đoạn trên Kanban. Dữ liệu lịch hẹn tiếp theo được hiển thị chính xác trên thẻ.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc05_pipeline_kanban_view.png', 'Giao diện Phễu bán hàng 6 giai đoạn trực quan kèm tổng doanh thu từng cột')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc05_pipeline_kanban_view.png" alt="Giao diện Phễu bán hàng 6 giai đoạn trực quan kèm tổng doanh thu từng cột" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Giao diện Phễu bán hàng 6 giai đoạn trực quan kèm tổng doanh thu từng cột</strong></div>
+              </div>
+            
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc05_customer_context.png', 'Màn hình Customer Context: Ghi nhận tương tác và thiết lập Next Action kế tiếp')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc05_customer_context.png" alt="Màn hình Customer Context: Ghi nhận tương tác và thiết lập Next Action kế tiếp" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Màn hình Customer Context: Ghi nhận tương tác và thiết lập Next Action kế tiếp</strong></div>
+              </div>
+            
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc05_pipeline_lead_persisted.png', 'Lead duy trì vị trí chính xác trên cột Kanban sau khi lưu tương tác, không bị mất lead')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc05_pipeline_lead_persisted.png" alt="Lead duy trì vị trí chính xác trên cột Kanban sau khi lưu tương tác, không bị mất lead" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Lead duy trì vị trí chính xác trên cột Kanban sau khi lưu tương tác, không bị mất lead</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-06">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-06</span>
+              <h2>Kỷ Luật &quot;Next Action&quot; Bắt Buộc &amp; Đề Xuất Tự Động Từ Minne Copilot</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Sales Discipline &amp; AI Copilot</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P1 - Thiết Yếu</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Ngăn chặn tình trạng &#x27;quên khách&#x27; bằng việc bắt buộc mọi tương tác phải có hành động tiếp theo. Đồng thời cung cấp trợ lý AI gợi ý hành động thông minh theo ngữ cảnh.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Tại màn hình Customer Context của một khách hàng, chọn kết quả &#x27;Khách bận/Hẹn gọi lại&#x27;.</li><li>Cố tình xóa trắng ô &#x27;Kế hoạch tiếp theo (Next Action)&#x27; và bấm &#x27;Lưu tương tác&#x27;.</li><li>Kiểm tra hiển thị banner cảnh báo kỷ luật.</li><li>Quan sát khối &#x27;Minne Copilot đề xuất hành động&#x27; được hiển thị tự động.</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Hệ thống chặn việc bỏ rơi khách, hiển thị thông báo cảnh báo rõ ràng. AI Copilot đưa ra các gợi ý hành động phù hợp với ngữ cảnh vừa ghi nhận.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Banner cảnh báo đỏ &#x27;Vui lòng nhập kế hoạch tiếp theo&#x27; hiển thị chuẩn xác khi bỏ trống. Khối Copilot đưa ra đề xuất kế hoạch gọi lại kèm thời điểm thích hợp.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc06_next_action_warning_and_copilot.png', 'Cảnh báo Kỷ luật Next Action khi thiếu kế hoạch tiếp theo &amp; Khối đề xuất thông minh từ AI Copilot')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc06_next_action_warning_and_copilot.png" alt="Cảnh báo Kỷ luật Next Action khi thiếu kế hoạch tiếp theo &amp; Khối đề xuất thông minh từ AI Copilot" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Cảnh báo Kỷ luật Next Action khi thiếu kế hoạch tiếp theo &amp; Khối đề xuất thông minh từ AI Copilot</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-07">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-07</span>
+              <h2>Đồng Bộ 2 Chiều Google Sheets Qua Inbound Webhook Tự Động</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Integration &amp; Webhook Engine</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P1 - Thiết Yếu</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Cho phép doanh nghiệp kết nối Google Sheets với Minne theo thời gian thực. Mỗi khi nhân viên thêm dòng mới trên Google Sheets, dữ liệu tự động đồng bộ về Minne qua Webhook.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Đăng nhập Super Admin / Quản trị viên, truy cập menu &#x27;Cài đặt Nền tảng&#x27;.</li><li>Cuộn đến khối &#x27;Tích Hợp Đồng Bộ Google Sheets (2 Chiều Real-time Webhook)&#x27;.</li><li>Kiểm tra link Inbound Webhook kèm mã khóa bảo mật và đoạn mã Google Apps Script mẫu có sẵn.</li><li>Bấm nút &#x27;⚡ Thử nghiệm gửi dữ liệu mẫu&#x27; để mô phỏng Webhook từ Google Sheets gửi về Minne.</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Hệ thống tiếp nhận payload JSON chuẩn từ Google Sheets, sinh lead mới vào cơ sở dữ liệu và trả về kết quả thành công.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Inbound Webhook API hoạt động tức thì. Thông báo kết quả xanh: &#x27;✓ Đã tiếp nhận thành công 1 khách hàng từ Google Sheets. (Tạo 1 lead thành công)&#x27;.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc07_google_sheets_sync_success.png', 'Giao diện cấu hình Webhook Google Sheets, mã Apps Script mẫu và thông báo tiếp nhận thành công')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc07_google_sheets_sync_success.png" alt="Giao diện cấu hình Webhook Google Sheets, mã Apps Script mẫu và thông báo tiếp nhận thành công" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Giao diện cấu hình Webhook Google Sheets, mã Apps Script mẫu và thông báo tiếp nhận thành công</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-08">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-08</span>
+              <h2>Trung Tâm Điều Hành &quot;Việc Cần Quan Tâm&quot; (Exceptions Triage)</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Management &amp; Risk Control</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P0 - Nghiêm Trọng</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Dành riêng cho Quản lý để can thiệp kịp thời các điểm nghẽn kinh doanh: Lead không có người phụ trách (Unassigned), Lead trễ hạn SLA, Lead bị bỏ quên.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Đăng nhập tài khoản Quản lý (quan-ly@test.vn).</li><li>Chọn menu &#x27;Việc cần quan tâm&#x27; trên thanh điều hướng.</li><li>Kiểm tra 3 khối KPI trạng thái: Chưa có người phụ trách, Vi phạm SLA (&gt;24h), Đã can thiệp hôm nay.</li><li>Kiểm tra các hành động quản trị nhanh: &#x27;Giao việc&#x27; (Assign) và &#x27;Tạm hoãn&#x27; (Snooze).</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Giao diện Triage hiển thị tập trung toàn bộ lead có rủi ro, phân loại mức độ khẩn cấp và cung cấp công cụ can thiệp 1 chạm.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Màn hình Triage hiển thị đầy đủ danh sách ngoại lệ kèm nhãn vi phạm SLA. Các nút tác vụ Giao việc và Tạm hoãn hoạt động phản hồi tức thì.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc08_exceptions_triage_view.png', 'Màn hình Quản trị ngoại lệ: Phân loại rủi ro SLA, giao việc và tạm hoãn xử lý')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc08_exceptions_triage_view.png" alt="Màn hình Quản trị ngoại lệ: Phân loại rủi ro SLA, giao việc và tạm hoãn xử lý" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Màn hình Quản trị ngoại lệ: Phân loại rủi ro SLA, giao việc và tạm hoãn xử lý</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-09">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-09</span>
+              <h2>Nạp Tri Thức &amp; Bản Đồ Tri Thức Doanh Nghiệp (Graph View Canvas 60FPS)</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Knowledge Base &amp; Graph RAG</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P1 - Thiết Yếu</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Quản trị viên/Quản lý nạp tài liệu tri thức chứa liên kết nội bộ [[wikilinks]]. Bản đồ tri thức tự động kết nối các khái niệm thành mạng lưới trực quan 60FPS bằng Canvas và hỗ trợ tra cứu RAG.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Đăng nhập Quản lý, truy cập menu &#x27;Tài liệu&#x27;.</li><li>Nạp tài liệu Markdown mới có chứa cú pháp [[Máy In Ricoh Pro]] và [[Phòng Kinh Doanh]].</li><li>Truy cập menu &#x27;Bản đồ tri thức&#x27; để quan sát mô hình đồ thị lực liên kết (Force-directed Graph).</li><li>Truy cập menu &#x27;Hỏi tri thức&#x27; và đặt câu hỏi tra cứu chính sách.</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Đồ thị hiển thị các nút và liên kết thực tế, hỗ trợ zoom/pan mượt mà 60FPS. Hỏi đáp RAG trả lời chính xác và trích dẫn nguồn tài liệu đã nạp.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Nạp tài liệu thành công. Bản đồ tri thức dựng đồ thị liên kết động tương tác mượt mà giữa các thực thể. Khung hỏi đáp RAG hiển thị câu trả lời thông minh trích xuất từ tài liệu.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc09_knowledge_source_added.png', 'Kho tài liệu tri thức: Nạp thành công tài liệu nghiệp vụ kèm liên kết [[wikilinks]]')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc09_knowledge_source_added.png" alt="Kho tài liệu tri thức: Nạp thành công tài liệu nghiệp vụ kèm liên kết [[wikilinks]]" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Kho tài liệu tri thức: Nạp thành công tài liệu nghiệp vụ kèm liên kết [[wikilinks]]</strong></div>
+              </div>
+            
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc09_knowledge_graph_view.png', 'Bản đồ tri thức Canvas 60FPS trực quan hóa liên kết giữa các thực thể tri thức doanh nghiệp')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc09_knowledge_graph_view.png" alt="Bản đồ tri thức Canvas 60FPS trực quan hóa liên kết giữa các thực thể tri thức doanh nghiệp" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Bản đồ tri thức Canvas 60FPS trực quan hóa liên kết giữa các thực thể tri thức doanh nghiệp</strong></div>
+              </div>
+            
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc09_ask_rag_search.png', 'Hỏi tri thức (RAG Engine): Tra cứu tự động trích xuất thông tin kèm trích dẫn tài liệu nguồn')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc09_ask_rag_search.png" alt="Hỏi tri thức (RAG Engine): Tra cứu tự động trích xuất thông tin kèm trích dẫn tài liệu nguồn" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Hỏi tri thức (RAG Engine): Tra cứu tự động trích xuất thông tin kèm trích dẫn tài liệu nguồn</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-10">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-10</span>
+              <h2>Bảng Quản Trị Multi-Tenant SaaS &amp; Cơ Chế Cách Ly Dữ Liệu</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>Super Admin SaaS Operations</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P0 - Nghiêm Trọng</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Dành riêng cho Super Admin: Quản lý danh sách các Workspace/Tenant trên toàn hệ thống SaaS, kiểm soát thời gian dùng thử (Trial), cấu hình tính năng và gia hạn dịch vụ.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Đăng nhập Super Admin (taminhquan182@gmail.com).</li><li>Mở menu &#x27;Quản trị Nền tảng&#x27;.</li><li>Kiểm tra danh sách Workspace doanh nghiệp (Alphatech default, các tenant đăng ký).</li><li>Kiểm tra các thông số: Hạn dùng thử (Trial Expiry), Trạng thái kích hoạt, Hạn ngạch (Quota), Nút gia hạn gói dịch vụ.</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Super Admin có cái nhìn toàn cảnh về hạ tầng SaaS, kiểm soát các tenant mà không nhìn thấy dữ liệu nội bộ bảo mật của từng khách hàng.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Bảng quản trị Multi-Tenant hiển thị trực quan các thẻ Workspace, bộ đếm ngày dùng thử, trạng thái License và các công cụ kích hoạt vận hành nền tảng.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc10_super_admin_tenant_management.png', 'Bảng điều khiển Multi-Tenant SaaS: Quản lý thời hạn dùng thử, trạng thái và quota từng Workspace')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc10_super_admin_tenant_management.png" alt="Bảng điều khiển Multi-Tenant SaaS: Quản lý thời hạn dùng thử, trạng thái và quota từng Workspace" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Bảng điều khiển Multi-Tenant SaaS: Quản lý thời hạn dùng thử, trạng thái và quota từng Workspace</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+
+        <article class="uc-card" id="uc-11">
+          <div class="uc-header">
+            <div class="uc-title-group">
+              <span class="uc-badge">UC-11</span>
+              <h2>Chốt Đơn Bán Hàng &amp; Đẩy Sang ERP Odoo (XML-RPC)</h2>
+            </div>
+            <div class="uc-status-pill status-passed">
+              <span class="status-dot"></span>
+              PASSED
+            </div>
+          </div>
+
+          <div class="uc-submeta">
+            <div class="submeta-item"><strong>Module:</strong> <span>ERP Integration (Odoo)</span></div>
+            <div class="submeta-item"><strong>Mức độ ưu tiên:</strong> <span class="priority-pill">P1 - Thiết Yếu</span></div>
+            <div class="submeta-item"><strong>Kết quả nghiệm thu:</strong> <span class="verdict-passed">ĐẠT CHUẨN</span></div>
+          </div>
+
+          <div class="uc-body">
+            <div class="info-block">
+              <div class="block-label">🎯 Mục Tiêu Kiểm Thử</div>
+              <p>Kiểm tra cơ chế chốt đơn thành công từ Minne và đồng bộ tự động dữ liệu đơn hàng sang hệ thống ERP Odoo qua giao thức XML-RPC.</p>
+            </div>
+
+            <div class="info-block">
+              <div class="block-label">📋 Các Bước Thực Hiện Kiểm Thử Thực Tế</div>
+              <ol class="steps-list">
+                <li>Mở màn hình Customer Context của khách hàng đang ở giai đoạn Chốt thành công.</li><li>Xác nhận sự hiện diện của nút tích hợp &#x27;Tạo đơn hàng trên Odoo&#x27;.</li><li>Bấm tạo đơn hàng và chấp thuận hộp thoại xác nhận đồng bộ.</li><li>Kiểm tra phản hồi tích hợp XML-RPC sang backend ERP.</li>
+              </ol>
+            </div>
+
+            <div class="results-grid">
+              <div class="result-box expected-box">
+                <div class="res-label">✅ Kết Quả Mong Đợi</div>
+                <p>Hệ thống xác nhận lệnh đồng bộ ERP, ghi nhận đơn hàng sale.order và thông báo trạng thái thành công.</p>
+              </div>
+              <div class="result-box actual-box">
+                <div class="res-label">🔍 Kết Quả Quan Sát Thực Tế (Thực Thi)</div>
+                <p>Nút tạo đơn hàng Odoo kích hoạt hoàn hảo, cơ chế XML-RPC kết nối chuẩn xác với backend Odoo, phản hồi thành công và cập nhật thẻ trạng thái.</p>
+              </div>
+            </div>
+
+            <div class="screenshots-section">
+              <div class="block-label">📷 Minh Chứng Ảnh Chụp Trực Quan (Edge Hi-DPI Verification)</div>
+              <div class="gallery-grid">
+                
+              <div class="screenshot-card" onclick="openLightbox('./screenshots/uc11_odoo_erp_sync.png', 'Giao diện đồng bộ ERP: Nút kích hoạt tạo đơn hàng Odoo (sale.order) qua XML-RPC')">
+                <div class="img-wrapper">
+                  <img src="./screenshots/uc11_odoo_erp_sync.png" alt="Giao diện đồng bộ ERP: Nút kích hoạt tạo đơn hàng Odoo (sale.order) qua XML-RPC" loading="lazy">
+                  <div class="zoom-hint"><span class="icon">🔍</span> Bấm để xem ảnh phóng to</div>
+                </div>
+                <div class="caption"><strong>📸 Giao diện đồng bộ ERP: Nút kích hoạt tạo đơn hàng Odoo (sale.order) qua XML-RPC</strong></div>
+              </div>
+            
+              </div>
+            </div>
+          </div>
+        </article>
+        
+      </main>
+    </div>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+
+  <script>
+    function openLightbox(src, caption) {
+      const lb = document.getElementById('lightbox');
+      const img = document.getElementById('lightbox-img');
+      const cap = document.getElementById('lightbox-caption');
+      img.src = src;
+      cap.textContent = caption;
+      lb.classList.add('active');
+    }
+
+    function closeLightbox() {
+      const lb = document.getElementById('lightbox');
+      lb.classList.remove('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>

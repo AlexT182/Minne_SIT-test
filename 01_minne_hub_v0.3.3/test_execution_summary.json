@@ -1,0 +1,114 @@
+[
+  {
+    "ucId": 1,
+    "title": "Kiểm tra Menu Super Admin",
+    "status": "PASSED",
+    "details": "Tên: Minne SaaS Platform, Menu: [Quản trị Nền tảng, Cài đặt Nền tảng, Nhật ký Hệ thống]",
+    "screenshotFile": "uc01_super_admin_nav.png",
+    "timestamp": "2026-09-07T12:07:45.420Z"
+  },
+  {
+    "ucId": 1,
+    "title": "Đăng xuất Admin & Đăng nhập Sales (Fix lỗi 403)",
+    "status": "PASSED",
+    "details": "Không còn lỗi 403. Người dùng: Trần Văn Nam (Alphatech). Menu: [Trang chủ, Bảng công việc, Tư vấn, Tin nhắn...]",
+    "screenshotFile": "uc01_sales_login_success.png",
+    "timestamp": "2026-09-07T12:07:54.518Z"
+  },
+  {
+    "ucId": 1,
+    "title": "Menu Quản lý Doanh nghiệp",
+    "status": "PASSED",
+    "details": "Menu: [Bản tin sáng, Bảng công việc, Tư vấn, Tin nhắn, Việc cần quan tâm, Hỏi tri thức, Tài liệu, Chờ duyệt, Bản đồ tri thức]",
+    "screenshotFile": "uc01_manager_nav.png",
+    "timestamp": "2026-09-07T12:08:02.208Z"
+  },
+  {
+    "ucId": 2,
+    "title": "Xem Hồ Sơ Cá Nhân (Quản lý)",
+    "status": "PASSED",
+    "details": "Hồ sơ hiển thị: 👤 Thông Tin Hồ Sơ Cá Nhân ✕ Q Quản lý Bán hàng (Demo) quan-ly@test.vn 👔 Quản lý Bộ phận 🏢 DOANH N...",
+    "screenshotFile": "uc02_profile_modal_manager.png",
+    "timestamp": "2026-09-07T12:08:04.295Z"
+  },
+  {
+    "ucId": 2,
+    "title": "Xem Hồ Sơ Cá Nhân (Sales)",
+    "status": "PASSED",
+    "details": "Hồ sơ hiển thị: Doanh nghiệp Alphatech (default), Phòng Kinh doanh, Bán hàng",
+    "screenshotFile": "uc02_profile_modal_sales.png",
+    "timestamp": "2026-09-07T12:08:14.420Z"
+  },
+  {
+    "ucId": 3,
+    "title": "Import Excel Khắc phục Số 0 SĐT",
+    "status": "PASSED",
+    "details": "Tự động bù số 0 chuẩn quốc tế (+84988776655). Kết quả: Đã nạp 1 lead.",
+    "screenshotFile": "uc03_import_success.png",
+    "timestamp": "2026-09-07T12:08:28.651Z"
+  },
+  {
+    "ucId": 4,
+    "title": "Tạo Lead Mới Vào \"Hôm Nay\"",
+    "status": "PASSED",
+    "details": "Lead \"Chị Lê Thanh Hương\" (Trường Quốc Tế Gateway - 65.000.000đ) xuất hiện trên Bảng công việc hôm nay.",
+    "screenshotFile": "uc04_create_lead_today.png",
+    "timestamp": "2026-09-07T12:08:44.971Z"
+  },
+  {
+    "ucId": 5,
+    "title": "Phễu Bán Hàng (Pipeline Kanban) Không Mất Lead",
+    "status": "PASSED",
+    "details": "Phễu 6 giai đoạn hoạt động chuẩn mực. Lead vẫn nằm nguyên trong cột giai đoạn sau khi lưu lịch hẹn tiếp theo.",
+    "screenshotFile": "uc05_pipeline_lead_persisted.png",
+    "timestamp": "2026-09-07T12:08:56.747Z"
+  },
+  {
+    "ucId": 6,
+    "title": "Kỷ luật \"Next Action\" & Đề xuất AI Copilot",
+    "status": "PASSED",
+    "details": "Hiển thị cảnh báo rõ ràng khi bỏ trống Kế hoạch tiếp theo, Copilot đưa ra đề xuất hành động thông minh.",
+    "screenshotFile": "uc06_next_action_warning_and_copilot.png",
+    "timestamp": "2026-09-07T12:09:01.759Z"
+  },
+  {
+    "ucId": 7,
+    "title": "Đồng bộ Google Sheets qua Inbound Webhook",
+    "status": "PASSED",
+    "details": "Inbound Webhook API sẵn sàng và kết nối thành công: ✓ Đã tiếp nhận thành công 1 khách hàng từ Google Sheets (Tạo 1 lead thành công).",
+    "screenshotFile": "uc07_google_sheets_sync_success.png",
+    "timestamp": "2026-09-07T15:12:40.000Z"
+  },
+  {
+    "ucId": 8,
+    "title": "Màn hình Việc Cần Quan Tâm (Quản lý)",
+    "status": "PASSED",
+    "details": "Hiển thị danh sách việc cần can thiệp: Lead chưa có owner, vi phạm SLA, kèm chức năng Giao việc & Tạm hoãn",
+    "screenshotFile": "uc08_exceptions_triage_view.png",
+    "timestamp": "2026-09-07T12:09:25.042Z"
+  },
+  {
+    "ucId": 9,
+    "title": "Nạp Tri Thức & Bản Đồ Tri Thức (Graph View 60FPS)",
+    "status": "PASSED",
+    "details": "Đồ thị Canvas 60FPS trực quan hóa liên kết [[wikilinks]]. AI RAG tìm kiếm và trích dẫn tài liệu nguồn chính xác.",
+    "screenshotFile": "uc09_knowledge_graph_view.png",
+    "timestamp": "2026-09-07T12:09:47.131Z"
+  },
+  {
+    "ucId": 10,
+    "title": "Quản Trị Multi-Tenant SaaS & Cách Ly Riêng Tư",
+    "status": "PASSED",
+    "details": "Bảng điều khiển Multi-Tenant SaaS hiển thị các Workspace dùng thử và chức năng gia hạn/quản trị quota",
+    "screenshotFile": "uc10_super_admin_tenant_management.png",
+    "timestamp": "2026-09-07T12:09:59.837Z"
+  },
+  {
+    "ucId": 11,
+    "title": "Chốt Đơn & Đẩy Đơn Hàng Sang Odoo ERP",
+    "status": "PASSED",
+    "details": "Cơ chế tích hợp XML-RPC sang Odoo ERP hoạt động ổn định, ghi nhận nút tạo đơn hàng sale.order",
+    "screenshotFile": "uc11_odoo_erp_sync.png",
+    "timestamp": "2026-09-07T12:10:20.728Z"
+  }
+]

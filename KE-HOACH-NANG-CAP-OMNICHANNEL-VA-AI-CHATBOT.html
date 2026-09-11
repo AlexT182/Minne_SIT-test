@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kế Hoạch Nâng Cấp Chi Tiết: Quản Trị Đa Kênh &amp; AI Sales Chatbot • Minne AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -2px rgba(0, 0, 0, 0.02); }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <!-- TOP HEADER -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-emerald-500/20">
+                    ⚡
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">
+                        Kế Hoạch Nâng Cấp Kỹ Thuật (Improvement Plan)
+                    </h1>
+                    <p class="text-xs text-slate-500">Quản Trị Lead Đa Kênh (SNS/Web) &amp; AI Sales Chatbot Widget 24/7</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="KE-HOACH-KINH-DOANH-VA-GTM-ODOO-MINNE.html" class="hidden sm:inline-flex text-xs font-semibold text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg border border-slate-200 bg-white">
+                    &larr; Kế Hoạch Kinh Doanh
+                </a>
+                <button onclick="window.print()" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-sm">
+                    🖨️ In / Xuất PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+        <!-- HERO BANNER -->
+        <section class="bg-gradient-to-r from-slate-950 via-teal-950 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 max-w-3xl space-y-4">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 text-teal-200 text-xs font-mono backdrop-blur-md">
+                    <span>Mã Kế Hoạch: PLAN-2026-OMNI-CHATBOT • Lộ trình 4 Sprints (4 Tuần)</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+                    Giải Quyết 2 Nhu Cầu Sống Còn: Quản Trị Đa Kênh &amp; AI Tư Vấn Tự Động
+                </h2>
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                    Kế hoạch chi tiết biến Minne AI thành trung tâm thu gom mọi nguồn lead từ 
+                    <strong>Facebook Ads, Zalo OA, Telegram, Website Form</strong> kèm một <strong>AI Chatbot Bán Hàng 24/7</strong> 
+                    nhúng trực tiếp vào website công khai để tư vấn chuyên sâu, tự động xin số điện thoại và chuyển giao thông minh cho Sales.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-8 border-t border-white/10 text-left">
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+                    <span class="text-xs text-teal-300 font-medium">Sprint 1 (Tuần 1)</span>
+                    <div class="text-lg sm:text-xl font-extrabold text-white mt-1">AI Chatbot Widget</div>
+                    <span class="text-[11px] text-slate-400 mt-1 inline-block">Nhúng 1 dòng script vào web</span>
+                </div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+                    <span class="text-xs text-blue-300 font-medium">Sprint 2 (Tuần 2)</span>
+                    <div class="text-lg sm:text-xl font-extrabold text-white mt-1">Lead Đa Kênh &amp; 360</div>
+                    <span class="text-[11px] text-slate-400 mt-1 inline-block">Facebook, Zalo, Khử trùng SĐT</span>
+                </div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+                    <span class="text-xs text-purple-300 font-medium">Sprint 3 (Tuần 3)</span>
+                    <div class="text-lg sm:text-xl font-extrabold text-white mt-1">Human Handoff</div>
+                    <span class="text-[11px] text-slate-400 mt-1 inline-block">Bắn Alert Telegram &amp; Odoo</span>
+                </div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+                    <span class="text-xs text-amber-300 font-medium">Sprint 4 (Tuần 4)</span>
+                    <div class="text-lg sm:text-xl font-extrabold text-white mt-1">Unified Inbox UI</div>
+                    <span class="text-[11px] text-slate-400 mt-1 inline-block">Hộp thư hội thoại tập trung</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SƠ ĐỒ LUỒNG KIẾN TRÚC -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-10 space-y-6">
+            <div class="border-b border-slate-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-xs font-mono font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">KIẾN TRÚC TỔNG THỂ</span>
+                    <h3 class="text-2xl font-extrabold text-slate-900 mt-2">Sơ Đồ Dòng Dữ Liệu Hai Chiều (Omnichannel Data Flow)</h3>
+                </div>
+                <span class="text-xs text-slate-500 font-mono">Mermaid.js Flowchart</span>
+            </div>
+
+            <div class="mermaid flex justify-center py-4 bg-slate-50 rounded-2xl p-4 border border-slate-100 overflow-x-auto">
+flowchart TD
+    subgraph CHANNELS["1. CÁC NGUỒN TƯƠNG TÁC ĐẦU VÀO"]
+        FB["Facebook Messenger / Lead Ads"]
+        ZL["Zalo Official Account (OA)"]
+        TG["Telegram Bot"]
+        WEB["Website Public Chat Widget (widget.js)"]
+    end
+
+    subgraph GATEWAY["2. MINNE OMNICHANNEL GATEWAY (/api/channel)"]
+        NORM["Event Normalizer<br/>(Chuẩn hóa định dạng)"]
+        DEDUP["Identity Resolution<br/>(Khử trùng SĐT / Chân dung 360)"]
+        ATTR["Attribution Tracker<br/>(Ghi nhận UTM / Nguồn chiến dịch)"]
+    end
+
+    subgraph AI_CORE["3. MINNE AI SALES AGENT (CONVERSATION CORE)"]
+        INTENT["Intent Classifier<br/>(Hỏi giá, So sánh, Phàn nàn)"]
+        RAG["RAG Knowledge Hub<br/>(Đọc Catalogue PDF, Chính sách giá)"]
+        QUALIFY["Lead Qualifier<br/>(Khéo léo xin SĐT & Ngân sách)"]
+        CHECK{"Phát hiện HOT LEAD<br/>hoặc Cần Người Thật?"}
+    end
+
+    subgraph OUTPUT["4. ĐIỀU PHỐI & BÀN GIAO"]
+        BOT_REPLY["AI Trả Lời Trực Tiếp<br/>(Streaming 24/7)"]
+        HANDOFF["SMART HUMAN HANDOFF<br/>• Alert Telegram / Zalo nhóm<br/>• Tạo Lead Odoo CRM & Chatter<br/>• Bàn giao Sales trực ca"]
+    end
+
+    FB --> NORM
+    ZL --> NORM
+    TG --> NORM
+    WEB --> NORM
+
+    NORM --> DEDUP --> ATTR --> INTENT
+    INTENT --> RAG --> QUALIFY --> CHECK
+    CHECK -- "Không / Hỏi chung" --> BOT_REPLY --> CHANNELS
+    CHECK -- "Có / HOT LEAD" --> HANDOFF
+            </div>
+        </section>
+
+        <!-- SPRINT 1 -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-10 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center space-x-3">
+                    <span class="w-10 h-10 rounded-2xl bg-teal-100 text-teal-800 font-extrabold flex items-center justify-center">S1</span>
+                    <div>
+                        <span class="text-xs font-mono font-bold text-teal-600 uppercase tracking-wider">Tuần 1</span>
+                        <h4 class="text-xl font-bold text-slate-900">AI Sales Chatbot Engine &amp; Web Widget Nhúng</h4>
+                    </div>
+                </div>
+                <span class="text-xs font-bold px-3 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200">Front-Door Asset</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <h5 class="font-bold text-slate-900 text-sm flex items-center">
+                        <span class="mr-2">🛠️</span> 1. Kỹ Thuật Backend API (`/api/chat`)
+                    </h5>
+                    <ul class="space-y-2 text-slate-600">
+                        <li>• <strong>Endpoint khởi tạo:</strong> <code>POST /api/chat/session</code> (Tạo thread tạm cho khách ẩn danh, lưu trang tham chiếu referrer, IP, thiết bị).</li>
+                        <li>• <strong>Streaming SSE:</strong> <code>POST /api/chat/message</code> (Gửi câu hỏi và nhận câu trả lời dạng gõ chữ Server-Sent Events dưới 1.8 giây).</li>
+                        <li>• <strong>Prompting Bán Hàng:</strong> Không chỉ trả lời như máy, bot luôn có câu hỏi mở cuối câu để khai thác quy mô và khéo léo xin số Zalo/SĐT để gửi báo giá chi tiết.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <h5 class="font-bold text-slate-900 text-sm flex items-center">
+                        <span class="mr-2">📦</span> 2. Thư Viện `widget.js` Nhúng 1 Dòng
+                    </h5>
+                    <p class="text-slate-600">Khách hàng chỉ cần copy 1 dòng mã nhúng vào thẻ <code>&lt;body&gt;</code> của bất kỳ website nào:</p>
+                    <div class="bg-slate-900 text-slate-200 p-3 rounded-xl mono text-[11px] select-all overflow-x-auto">
+&lt;script src="https://minne.alphatech.ai.vn/static/widget.js" 
+        data-tenant="client_id" 
+        data-primary="#2563eb" 
+        async&gt;&lt;/script&gt;
+                    </div>
+                    <ul class="space-y-1.5 text-slate-600 pt-1">
+                        <li>• Dung lượng siêu nhẹ &lt; 25KB, không làm tụt điểm tốc độ trang web (Google PageSpeed).</li>
+                        <li>• Kích hoạt popup thông minh: Khách ở lại trang Báo giá &gt; 20 giây &rarr; tự động chào và gợi ý dự toán.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPRINT 2 -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-10 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center space-x-3">
+                    <span class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-800 font-extrabold flex items-center justify-center">S2</span>
+                    <div>
+                        <span class="text-xs font-mono font-bold text-blue-600 uppercase tracking-wider">Tuần 2</span>
+                        <h4 class="text-xl font-bold text-slate-900">Quản Trị Nguồn Lead Đa Kênh &amp; Hợp Nhất Danh Tính (Customer 360)</h4>
+                    </div>
+                </div>
+                <span class="text-xs font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">Data Hub</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <h5 class="font-bold text-slate-900 text-sm flex items-center">
+                        <span class="mr-2">🔌</span> 1. Mở Rộng Kênh Mạng Xã Hội (Channels)
+                    </h5>
+                    <ul class="space-y-2 text-slate-600">
+                        <li>• <strong>Facebook Messenger:</strong> Webhook tiếp nhận tin nhắn từ Fanpage bán hàng qua Meta Graph API.</li>
+                        <li>• <strong>Facebook Lead Ads:</strong> Bắt ngay sự kiện khi khách điền form trên quảng cáo Facebook Ads, bóc tách SĐT và nhu cầu tự động.</li>
+                        <li>• <strong>Zalo OA:</strong> Cập nhật cơ chế tự động làm mới Token (Auto-refresh OAuth token) không bị ngắt kết nối sau 25 giờ.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <h5 class="font-bold text-slate-900 text-sm flex items-center">
+                        <span class="mr-2">🔍</span> 2. Khử Trùng Lặp &amp; Chân Dung 360
+                    </h5>
+                    <ul class="space-y-2 text-slate-600">
+                        <li>• <strong>Deduplication Engine:</strong> Khi khách chat Fanpage rồi điền form web, Minne quét qua SĐT/Email để ghép chung vào 1 hồ sơ <code>sales_party</code>, không tạo 2 lead trùng lặp gây xung đột nhân viên.</li>
+                        <li>• <strong>Attribution Tracking:</strong> Ghi nhận rõ <em>First Touch</em> (Khách biết qua quảng cáo Facebook nào?) và <em>Last Touch</em> (Khách chốt đơn qua Zalo hay gọi hotline?).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPRINT 3 -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-10 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center space-x-3">
+                    <span class="w-10 h-10 rounded-2xl bg-purple-100 text-purple-800 font-extrabold flex items-center justify-center">S3</span>
+                    <div>
+                        <span class="text-xs font-mono font-bold text-purple-600 uppercase tracking-wider">Tuần 3</span>
+                        <h4 class="text-xl font-bold text-slate-900">Bàn Giao Con Người (Smart Human Handoff) &amp; Đồng Bộ Odoo CRM</h4>
+                    </div>
+                </div>
+                <span class="text-xs font-bold px-3 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200">Conversion Engine</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <h5 class="font-bold text-slate-900 text-sm flex items-center">
+                        <span class="mr-2">🚨</span> 1. Phát Hiện Tín Hiệu Handoff
+                    </h5>
+                    <ul class="space-y-2 text-slate-600">
+                        <li>• <strong>Từ khóa yêu cầu trực tiếp:</strong> <em>"gặp người", "cho nhân viên gọi lại", "cần tư vấn trực tiếp"</em>.</li>
+                        <li>• <strong>Buying Signals (Tín hiệu mua nóng):</strong> Khách hỏi về số lượng lớn, chiết khấu dự án, điều khoản hợp đồng doanh nghiệp.</li>
+                        <li>• <strong>Phản ứng của AI:</strong> Lập tức khóa bot tự động trò chuyện để tránh "nói leo", thông báo nhẹ nhàng cho khách rằng chuyên viên đang liên hệ lại trong 5 phút.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <h5 class="font-bold text-slate-900 text-sm flex items-center">
+                        <span class="mr-2">🔄</span> 2. Bắn Alert &amp; Ghi Chatter Odoo Tức Thì
+                    </h5>
+                    <ul class="space-y-2 text-slate-600">
+                        <li>• <strong>Bắn thông báo tức thời:</strong> Gửi tin nhắn đến Telegram/Zalo nhóm của đội Sales: <em>"🚨 CÓ HOT LEAD: Anh Tuấn (0912xxx) cần báo giá 5 máy POS gấp"</em>.</li>
+                        <li>• <strong>Đồng bộ Odoo CRM:</strong> Tự động tạo Opportunity trên Odoo với nhãn <code>[HOT LEAD - HANDOFF]</code>. Ghi toàn bộ nội dung chat từ đầu đến cuối vào Chatter để Sales mở ra là hiểu ngữ cảnh ngay.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SPRINT 4 -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-10 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center space-x-3">
+                    <span class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 font-extrabold flex items-center justify-center">S4</span>
+                    <div>
+                        <span class="text-xs font-mono font-bold text-amber-600 uppercase tracking-wider">Tuần 4</span>
+                        <h4 class="text-xl font-bold text-slate-900">Giao Diện Hộp Thư Đa Kênh (Unified Inbox) &amp; Kiểm Thử Nghiệm Thu</h4>
+                    </div>
+                </div>
+                <span class="text-xs font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">UI &amp; Verification</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <h5 class="font-bold text-slate-900 text-sm flex items-center">
+                        <span class="mr-2">💬</span> 1. Màn Hình Hộp Thư Hội Thoại Tập Trung
+                    </h5>
+                    <p class="text-slate-600">Nhân viên Sales không cần mở cùng lúc 4 tab trình duyệt. Một giao diện duy nhất hiển thị tin nhắn từ Facebook, Zalo, Web Widget và Telegram:</p>
+                    <ul class="space-y-1.5 text-slate-600">
+                        <li>• Cột trái: Danh sách hội thoại kèm icon nguồn (FB, Zalo, Web) và nhãn trạng thái (AI đang xử lý / Đã tiếp quản).</li>
+                        <li>• Cột giữa: Cửa sổ chat trực tiếp hai chiều.</li>
+                        <li>• Cột phải: Customer 360 Context (Họ tên, SĐT, ngân sách, lịch sử mua hàng ERP).</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                    <h5 class="font-bold text-slate-900 text-sm flex items-center">
+                        <span class="mr-2">🧪</span> 2. Bộ Kiểm Thử Tích Hợp Toàn Diện (SIT/UAT)
+                    </h5>
+                    <ul class="space-y-1.5 text-slate-600">
+                        <li>• Viết test suite tự động bằng Playwright kiểm thử trọn vẹn luồng khách chat trên web &rarr; AI tư vấn &rarr; xin SĐT &rarr; tạo lead trên Odoo &rarr; bắn alert.</li>
+                        <li>• Xuất file báo cáo nghiệm thu tự động kiểm tra tốc độ phản hồi &lt; 1.8s và độ chính xác RAG &gt; 98%.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- BẢNG THEO DÕI WBS -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-6 sm:p-10 space-y-6">
+            <h3 class="text-xl font-extrabold text-slate-900">📋 Bảng Phân Rã Công Việc &amp; File Mã Nguồn Tác Động (WBS Matrix)</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border border-slate-200 rounded-2xl overflow-hidden">
+                    <thead class="bg-slate-100 text-slate-700 font-bold uppercase">
+                        <tr>
+                            <th class="p-3.5">Hạng Mục</th>
+                            <th class="p-3.5">File Mã Nguồn Minne Tác Động</th>
+                            <th class="p-3.5">Tiêu Chuẩn Đầu Ra</th>
+                            <th class="p-3.5">Thời Gian</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-900">API Chat &amp; SSE Stream</td>
+                            <td class="p-3.5 mono text-[11px]">minne/app/api/chat.py, app/kb/service.py</td>
+                            <td class="p-3.5">Hỗ trợ streaming câu trả lời dưới 1.8 giây</td>
+                            <td class="p-3.5 font-mono text-teal-600 font-bold">Tuần 1</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-900">Thư viện Widget Nhúng</td>
+                            <td class="p-3.5 mono text-[11px]">minne/web/static/widget.js</td>
+                            <td class="p-3.5">Dung lượng &lt; 25KB, nhúng 1 dòng script chạy ngay</td>
+                            <td class="p-3.5 font-mono text-teal-600 font-bold">Tuần 1</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-900">Facebook Messenger &amp; Lead Ads</td>
+                            <td class="p-3.5 mono text-[11px]">minne/app/integrations/channels.py</td>
+                            <td class="p-3.5">Nhận/gửi tin nhắn Fanpage và bắt lead form Facebook</td>
+                            <td class="p-3.5 font-mono text-blue-600 font-bold">Tuần 2</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-900">Hợp Nhất Danh Tính 360</td>
+                            <td class="p-3.5 mono text-[11px]">minne/app/db/sales_models.py, sales_ingest.py</td>
+                            <td class="p-3.5">Khử trùng lặp SĐT, gom chung hội thoại vào sales_party</td>
+                            <td class="p-3.5 font-mono text-blue-600 font-bold">Tuần 2</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-900">Smart Human Handoff</td>
+                            <td class="p-3.5 mono text-[11px]">minne/app/api/channel.py, app/notify.py</td>
+                            <td class="p-3.5">Nhận diện câu xin gặp người, bắn alert Telegram</td>
+                            <td class="p-3.5 font-mono text-purple-600 font-bold">Tuần 3</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-900">Đồng Bộ Lead &amp; Chatter Odoo</td>
+                            <td class="p-3.5 mono text-[11px]">minne/app/integrations/odoo.py</td>
+                            <td class="p-3.5">Tạo Opportunity kèm full lịch sử hội thoại trên Chatter</td>
+                            <td class="p-3.5 font-mono text-purple-600 font-bold">Tuần 3</td>
+                        </tr>
+                        <tr>
+                            <td class="p-3.5 font-bold text-slate-900">Unified Inbox UI</td>
+                            <td class="p-3.5 mono text-[11px]">minne/web/static/app.js</td>
+                            <td class="p-3.5">Màn hình hộp thư chat tập trung cho nhân viên Sales</td>
+                            <td class="p-3.5 font-mono text-amber-600 font-bold">Tuần 4</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-xs text-slate-400 border-t border-slate-200">
+        Minne AI Sales Control Plane &bull; Omnichannel &amp; AI Chatbot Improvement Plan v1.0
+    </footer>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+    </script>
+</body>
+</html>
