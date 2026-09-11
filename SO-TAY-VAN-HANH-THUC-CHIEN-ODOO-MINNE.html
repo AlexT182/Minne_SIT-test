@@ -239,11 +239,12 @@ flowchart LR
                             <strong>Mục tiêu:</strong> Kiểm tra khả năng tương tác tự động 24/7 của Chatbot Widget nhúng nhẹ (&lt;20KB), trả lời câu hỏi tư vấn cấu hình sản phẩm và bắt thông tin liên hệ inline.
                         </p>
                         <ol class="list-decimal pl-5 space-y-2 text-slate-700">
-                            <li>Mở tab ẩn danh, truy cập trang demo Storefront có gắn widget tại: <a href="https://minne.alphatech.ai.vn/static/widget_demo.html" target="_blank" class="text-blue-600 underline font-bold">/static/widget_demo.html</a>.</li>
-                            <li>Để ý góc phải bên dưới: Sau 4 giây, bóng chat tím tự động bung lời chào và gợi ý 3 câu hỏi nhanh.</li>
-                            <li>Bấm vào câu gợi ý: <em>"Tư vấn máy POS cho quán cafe / F&B"</em>.</li>
-                            <li>Quan sát AI bot phân tích câu hỏi và đề xuất máy POS Alphatech T1 Pro (15.6" cảm ứng, tích hợp máy in nhiệt Seiko 58mm, hỗ trợ quét mã QR VietQR).</li>
-                            <li>Điền Form Thu Thập Lead xuất hiện ngay trong cửa sổ chat: Họ tên: <strong>Đỗ Hoàng Long</strong>, SĐT: <strong>0988776655</strong>, Ghi chú: <em>"Mở quán trà sữa 2 tầng ở Cầu Giấy"</em> &rarr; Bấm <strong>Gửi thông tin</strong>.</li>
+                            <li>Mở tab ẩn danh, truy cập <strong>Trang chủ Storefront bán lẻ</strong> tại: <a href="https://saletemplate.alphatech.ai.vn" target="_blank" class="text-blue-600 underline font-bold">https://saletemplate.alphatech.ai.vn</a> (hoặc trang demo độc lập tại <a href="https://minne.alphatech.ai.vn/static/widget_demo.html" target="_blank" class="text-blue-600 underline">/static/widget_demo.html</a>).</li>
+                            <li>Để ý góc phải bên dưới trang chủ: Bóng chat tím Minne AI nổi bật sẵn sàng trên toàn bộ website (Trang chủ, Sản phẩm /shop, Giỏ hàng, Tra cứu).</li>
+                            <li>Bấm vào bóng chat hoặc nút nổi <em>"Tư vấn với Chuyên viên &amp; Minne AI"</em>: Cửa sổ chat AI mở ra kèm 4 nút gợi ý nhanh.</li>
+                            <li>Bấm vào câu gợi ý: <em>"💡 Tư vấn dòng máy POS phù hợp"</em>.</li>
+                            <li>Quan sát AI bot phân tích câu hỏi và đề xuất các dòng máy POS Alphatech (Sunmi T2s, D2s Lite màn hình cảm ứng, tích hợp máy in nhiệt Seiko 58mm).</li>
+                            <li>Điền Form Thu Thập Lead inline xuất hiện ngay trong cửa sổ chat: Họ tên: <strong>Đỗ Hoàng Long</strong>, SĐT: <strong>0988776655</strong>, Ghi chú: <em>"Mở quán trà sữa 2 tầng ở Cầu Giấy"</em> &rarr; Bấm <strong>Gửi thông tin</strong>.</li>
                             <li>Xác nhận widget hiển thị thông báo xanh: <em>"Đã nhận thông tin thành công! Chuyên viên sẽ liên hệ lại trong ít phút"</em>.</li>
                         </ol>
                     </div>
@@ -256,9 +257,14 @@ flowchart LR
                                 <div>• Nhu cầu: Máy POS quán trà sữa Cầu Giấy</div>
                             </div>
                         </div>
-                        <a href="https://minne.alphatech.ai.vn/static/widget_demo.html" target="_blank" class="mt-3 block text-center py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-md shadow-indigo-500/20">
-                            💬 Mở Widget Demo Trải Nghiệm Ngay &rarr;
-                        </a>
+                        <div class="space-y-2 mt-3">
+                            <a href="https://saletemplate.alphatech.ai.vn" target="_blank" class="block text-center py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-md shadow-indigo-500/20">
+                                🌐 Mở Trang Chủ Storefront Test Live &rarr;
+                            </a>
+                            <a href="https://minne.alphatech.ai.vn/static/widget_demo.html" target="_blank" class="block text-center py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold">
+                                💬 Hoặc mở Trang Demo Storefront
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -750,6 +756,15 @@ flowchart LR
         }
 
         window.onload = updateProgress;
+    </script>
+
+    <!-- Minne AI Sales Chatbot Widget (< 20KB) -->
+    <script 
+      src="https://minne.alphatech.ai.vn/static/widget.js" 
+      data-api-base="https://minne.alphatech.ai.vn" 
+      data-bot-name="Minne POS Advisor" 
+      data-primary-color="#6366f1" 
+      defer>
     </script>
 </body>
 </html>
