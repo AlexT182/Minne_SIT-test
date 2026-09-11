@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brochure Giới Thiệu Giải Pháp Bán Hàng Đa Kênh & AI Agent • Odoo 19 & Minne AI Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        minne: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7e22ce',
+                            900: '#581c87',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .glass { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); }
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -2px rgba(0, 0, 0, 0.02); }
+        .gold-gradient { background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%); }
+        .ai-gradient { background: linear-gradient(135deg, #6366f1 0%, #9333ea 50%, #ec4899 100%); }
+        .erp-gradient { background: linear-gradient(135deg, #0284c7 0%, #0d9488 50%, #059669 100%); }
+
+        /* PRINT STYLES FOR EXACT 2-PAGE A4 OUTPUT */
+        @media print {
+            body { background: white !important; padding: 0 !important; margin: 0 !important; }
+            .no-print { display: none !important; }
+            .brochure-page {
+                width: 210mm !important;
+                min-height: 297mm !important;
+                height: 297mm !important;
+                padding: 12mm 14mm !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                overflow: hidden !important;
+            }
+            .brochure-page:last-child {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
+            }
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        .brochure-page {
+            width: 210mm;
+            min-height: 297mm;
+            box-sizing: border-box;
+            background: white;
+            position: relative;
+        }
+
+        @media (max-width: 1024px) {
+            .brochure-page {
+                width: 100% !important;
+                min-height: auto !important;
+                padding: 24px 16px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-900 antialiased min-h-screen pb-16">
+
+    <!-- TOP CONTROL NAVIGATION (SCREEN ONLY) -->
+    <header class="no-print bg-slate-800 border-b border-slate-700 sticky top-0 z-50 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-indigo-600 to-purple-600 flex items-center justify-center font-black text-lg shadow-lg">
+                    ✨
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-sm sm:text-base leading-tight flex items-center gap-2">
+                        <span>Commercial Brochure • Combo Giải Pháp Bán Hàng &amp; AI Agent</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">2 Hướng Tiếp Cận</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Tài liệu giới thiệu sản phẩm &amp; tư vấn giải pháp dành cho Doanh nghiệp Bán lẻ</p>
+                </div>
+            </div>
+
+            <!-- VIEW SELECTOR & ACTIONS -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="bg-slate-700 p-1 rounded-xl flex text-xs font-semibold">
+                    <button onclick="switchView('both')" id="btn-both" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white transition">
+                        📄 Cả 2 Trang
+                    </button>
+                    <button onclick="switchView('p1')" id="btn-p1" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition">
+                        Trang 1: Truyền Thống
+                    </button>
+                    <button onclick="switchView('p2')" id="btn-p2" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition">
+                        Trang 2: AI-First
+                    </button>
+                </div>
+                <button onclick="window.print()" class="py-2 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs transition shadow-md flex items-center gap-1.5">
+                    <span>🖨️ Xuất PDF / In A4</span>
+                </button>
+                <a href="SO-TAY-VAN-HANH-THUC-CHIEN-ODOO-MINNE.html" class="hidden md:inline-flex text-xs text-slate-300 hover:text-white py-2 px-3 rounded-lg hover:bg-slate-700 transition">
+                    📖 Sổ Tay Vận Hành
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BROCHURE WRAPPER -->
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-8 flex flex-col items-center gap-10">
+
+        <!-- ========================================================================= -->
+        <!-- TRANG 1: HƯỚNG TRUYỀN THỐNG (WEBSITE PUBLIC -> CRM -> AI AGENT)          -->
+        <!-- ========================================================================= -->
+        <article id="page-1" class="brochure-page rounded-3xl shadow-2xl p-8 sm:p-10 flex flex-col justify-between border border-slate-100 relative overflow-hidden">
+            <!-- TOP ACCENT BAR -->
+            <div class="absolute top-0 left-0 right-0 h-2 erp-gradient"></div>
+
+            <!-- HEADER BANNER -->
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-700 via-indigo-700 to-teal-700 flex items-center justify-center text-white font-black text-xl shadow-md shadow-blue-500/20">
+                            🏢
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase tracking-wider font-extrabold text-blue-700 block">Bộ Giải Pháp Toàn Diện Cho Doanh Nghiệp Bán Lẻ</span>
+                            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">ALPHATECH RETAIL TRANSFORMATION SUITE</h2>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="inline-block px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-[11px] font-bold">
+                            HƯỚNG TIẾP CẬN 01: NỀN TẢNG TRUYỀN THỐNG
+                        </span>
+                        <div class="text-[11px] font-mono text-slate-500 mt-1">Website Public &rarr; Odoo ERP &rarr; AI Agent</div>
+                    </div>
+                </div>
+
+                <!-- VALUE PROPOSITION -->
+                <div class="mt-4 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
+                    <div class="max-w-3xl relative z-10 space-y-1.5">
+                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-mono font-bold border border-emerald-500/30">
+                            KIẾN TẠO NỀN MÓNG CHUYỂN ĐỔI SỐ BỀN VỮNG
+                        </span>
+                        <h3 class="text-base sm:text-lg font-extrabold leading-tight">
+                            Từ Mặt Tiền Số Chuyên Nghiệp Đến Bộ Máy Quản Trị CRM Chuẩn Quốc Tế, Đột Phá Bằng AI Bán Hàng 24/7
+                        </h3>
+                        <p class="text-slate-300 text-xs leading-relaxed">
+                            Mô hình số hóa chuẩn mực dành cho doanh nghiệp bán lẻ, chuỗi cửa hàng và đơn vị phân phối muốn xây dựng hệ thống từ gốc rễ: Sở hữu ngay <strong>Website Storefront nhận diện thương hiệu</strong>, liên thông liền mạch với <strong>Hệ thống Quản trị Odoo 19 ERP</strong>, và nâng cấp sức mạnh bán hàng với <strong>AI Sales Agent tự động hóa chốt đơn</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- SƠ ĐỒ 3 TẦNG LIÊN HOÀN -->
+                <div class="mt-4 grid grid-cols-3 gap-3 text-center">
+                    <div class="p-3 bg-blue-50/70 border border-blue-200 rounded-xl">
+                        <div class="text-lg mb-1">🌐</div>
+                        <div class="text-xs font-bold text-blue-900">1. Website Public</div>
+                        <div class="text-[10px] text-blue-700">Mặt tiền thương hiệu &amp; eCommerce</div>
+                    </div>
+                    <div class="p-3 bg-teal-50/70 border border-teal-200 rounded-xl">
+                        <div class="text-lg mb-1">⚙️</div>
+                        <div class="text-xs font-bold text-teal-900">2. Odoo CRM &amp; ERP</div>
+                        <div class="text-[10px] text-teal-700">Lõi quản trị &amp; dữ liệu đơn hàng</div>
+                    </div>
+                    <div class="p-3 bg-purple-50/70 border border-purple-200 rounded-xl">
+                        <div class="text-lg mb-1">🤖</div>
+                        <div class="text-xs font-bold text-purple-900">3. AI Sales Agent</div>
+                        <div class="text-[10px] text-purple-700">Trợ lý tư vấn &amp; chốt đơn 24/7</div>
+                    </div>
+                </div>
+
+                <!-- 3 TRỤ CỘT CHI TIẾT -->
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3.5 text-xs">
+                    <!-- CỘT 1 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col justify-between space-y-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center space-x-2 text-blue-700 font-bold pb-2 border-b border-slate-100">
+                                <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs">01</span>
+                                <span class="text-sm text-slate-900 font-extrabold">Website Storefront</span>
+                            </div>
+                            <ul class="space-y-1.5 text-slate-600 text-[11px] leading-relaxed">
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Giao diện bán hàng chuẩn SEO:</strong> Tốc độ tải trang &lt; 1.5s, tương thích 100% Mobile/Tablet/Desktop.</span>
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Giỏ hàng tự tính thuế VAT:</strong> Tự động tính VAT 15% / 8% / 10% minh bạch, hỗ trợ tạo đơn lẻ tự phục vụ.</span>
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Cổng Tra Cứu Bảo Hành (SĐT):</strong> Khách tự tra cứu đơn hàng và kích hoạt bảo hành 24 tháng passwordless.</span>
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Blog &amp; Tin Tức Tự Động:</strong> Tự động cập nhật bài viết truyền thông thu hút traffic tự nhiên.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono">Module: Storefront &amp; Portal</div>
+                    </div>
+
+                    <!-- CỘT 2 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col justify-between space-y-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center space-x-2 text-teal-700 font-bold pb-2 border-b border-slate-100">
+                                <span class="w-6 h-6 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs">02</span>
+                                <span class="text-sm text-slate-900 font-extrabold">Odoo 19 ERP Core</span>
+                            </div>
+                            <ul class="space-y-1.5 text-slate-600 text-[11px] leading-relaxed">
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Quản lý Khách hàng (CRM Lead):</strong> Tiếp nhận lead tự động, phân bổ theo khu vực và đội ngũ sales.</span>
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Ghi Nhật Ký Chatter Tự Động:</strong> Mọi trao đổi tư vấn được lưu vào timeline để kế toán/kho cùng nắm bắt.</span>
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Báo Giá &amp; Đơn Hàng (Sale Order):</strong> Xuất báo giá một chạm, quản lý bảng giá đại lý chiết khấu combo.</span>
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Bảo Mật &amp; Phân Quyền Đa Cấp:</strong> Phân định rõ quyền truy cập giữa Sales, Kế toán, Quản lý kho.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono">Module: CRM, Sale, Mail, Stock</div>
+                    </div>
+
+                    <!-- CỘT 3 -->
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col justify-between space-y-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center space-x-2 text-purple-700 font-bold pb-2 border-b border-slate-100">
+                                <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-xs">03</span>
+                                <span class="text-sm text-slate-900 font-extrabold">AI Sales Agent Nhúng</span>
+                            </div>
+                            <ul class="space-y-1.5 text-slate-600 text-[11px] leading-relaxed">
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Chatbot Widget Siêu Nhẹ (&lt; 20KB):</strong> Nhúng 1 dòng mã vào website, không làm chậm tốc độ tải trang.</span>
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Tư Vấn RAG Chuẩn Xác:</strong> Giải đáp thông số kỹ thuật, cấu hình POS và chính sách đổi mới 30 ngày.</span>
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Form Thu Lead Inline:</strong> Bắt thông tin khách ngay trong cửa sổ chat, đẩy thẳng vào Odoo CRM tức thì.</span>
+                                </li>
+                                <li class="flex items-start gap-1.5">
+                                    <span class="text-emerald-500 font-bold">✓</span>
+                                    <span><strong>Smart Human Handoff (AI Mute):</strong> Phát hiện ý định mua nóng &rarr; tạm dừng bot và bàn giao nhân viên tư vấn.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pt-2 border-t border-slate-100 text-[10px] text-slate-400 font-mono">Module: Minne Chatbot &amp; Gateway</div>
+                    </div>
+                </div>
+
+                <!-- BẢNG SO SÁNH HIỆU QUẢ -->
+                <div class="mt-4 bg-slate-50 border border-slate-200 rounded-2xl p-3.5">
+                    <span class="text-xs font-extrabold text-slate-900 block mb-2">📊 BẢNG SO SÁNH HIỆU QUẢ VẬN HÀNH DOANH NGHIỆP:</span>
+                    <div class="grid grid-cols-4 gap-2 text-[11px] text-center">
+                        <div class="p-2 bg-white rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block text-[10px]">Thời gian phản hồi</span>
+                            <span class="text-slate-500 line-through block text-[10px]">2 - 4 giờ</span>
+                            <span class="text-emerald-600 font-extrabold text-xs">&lt; 10 giây (Tức thì)</span>
+                        </div>
+                        <div class="p-2 bg-white rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block text-[10px]">Tỷ lệ thất thoát lead</span>
+                            <span class="text-slate-500 line-through block text-[10px]">25% - 40%</span>
+                            <span class="text-emerald-600 font-extrabold text-xs">Gần 0% (Đồng bộ Odoo)</span>
+                        </div>
+                        <div class="p-2 bg-white rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block text-[10px]">Trực chat ngoài giờ</span>
+                            <span class="text-slate-500 line-through block text-[10px]">Bỏ trống ban đêm</span>
+                            <span class="text-emerald-600 font-extrabold text-xs">AI phục vụ 24/7/365</span>
+                        </div>
+                        <div class="p-2 bg-white rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block text-[10px]">Thời gian chốt báo giá</span>
+                            <span class="text-slate-500 line-through block text-[10px]">1 - 2 ngày làm việc</span>
+                            <span class="text-emerald-600 font-extrabold text-xs">15 phút trên CRM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER SIGN-OFF & CONTACT -->
+            <div class="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                <div class="space-y-0.5">
+                    <div class="font-extrabold text-slate-900 text-[11px]">CÔNG TY CỔ PHẦN CÔNG NGHỆ BÁN LẺ ALPHATECH POS</div>
+                    <div class="text-slate-500 text-[10px]">Tầng 8, Tòa nhà Công Nghệ, Cầu Giấy, Hà Nội &bull; Hotline: 1900.6868 &bull; Email: sales@alphatech.ai.vn</div>
+                </div>
+                <div class="flex items-center space-x-2 font-mono text-[10px]">
+                    <a href="https://saletemplate.alphatech.ai.vn" target="_blank" class="px-2.5 py-1 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">
+                        🌐 Storefront Demo Live
+                    </a>
+                    <span class="text-slate-400">Trang 01 / 02</span>
+                </div>
+            </div>
+        </article>
+
+
+        <!-- ========================================================================= -->
+        <!-- TRANG 2: HƯỚNG AI-FIRST (CUNG ỨNG AI AGENT CHUYÊN BIỆT & ADD-ONS)         -->
+        <!-- ========================================================================= -->
+        <article id="page-2" class="brochure-page rounded-3xl shadow-2xl p-8 sm:p-10 flex flex-col justify-between border border-slate-100 relative overflow-hidden">
+            <!-- TOP ACCENT BAR -->
+            <div class="absolute top-0 left-0 right-0 h-2 ai-gradient"></div>
+
+            <!-- HEADER BANNER -->
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-600 flex items-center justify-center text-white font-black text-xl shadow-md shadow-purple-500/20">
+                            🤖
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase tracking-wider font-extrabold text-purple-700 block">Nền Tảng Trí Tuệ Nhân Tạo Bán Hàng Thế Hệ Mới</span>
+                            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">MINNE AI SALES AGENT PLATFORM</h2>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="inline-block px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-800 text-[11px] font-bold">
+                            HƯỚNG TIẾP CẬN 02: AI-FIRST ĐỘT PHÁ
+                        </span>
+                        <div class="text-[11px] font-mono text-slate-500 mt-1">AI Agent Lõi &rarr; Tương Thích &amp; Add-on CRM/Web</div>
+                    </div>
+                </div>
+
+                <!-- VALUE PROPOSITION -->
+                <div class="mt-4 bg-gradient-to-r from-purple-950 via-slate-950 to-indigo-950 rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
+                    <div class="max-w-3xl relative z-10 space-y-1.5">
+                        <span class="px-2.5 py-0.5 rounded-full bg-pink-500/20 text-pink-300 text-[10px] font-mono font-bold border border-pink-500/30">
+                            PLUG-AND-PLAY CHO MỌI DOANH NGHIỆP ĐANG KINH DOANH
+                        </span>
+                        <h3 class="text-base sm:text-lg font-extrabold leading-tight">
+                            AI Agent Chuyên Nghiệp Bán Hàng: Biến Mọi Kênh Tiếp Xúc Thành Cỗ Máy Chốt Đơn Tự Động 24/7
+                        </h3>
+                        <p class="text-slate-300 text-xs leading-relaxed">
+                            Khách hàng đã có Website, Fanpage hoặc CRM? Không cần đập bỏ hệ thống cũ! <strong>Minne AI Agent</strong> hoạt động như một <strong>Lớp Trí Tuệ &amp; Điều Khiển Bán Hàng Siêu Tốc (AI Control Plane)</strong>: cắm là chạy, gom lead từ Web Chat, Facebook Messenger, Meta Lead Ads, chống trùng danh tính Customer 360 và tự động bàn giao thông minh cho Sales Rep.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 4 NĂNG LỰC ĐỘT PHÁ CỦA AI AGENT -->
+                <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
+                    <!-- NĂNG LỰC 1 -->
+                    <div class="bg-purple-50/50 rounded-2xl border border-purple-200/80 p-3.5 space-y-1.5">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-base">💬</span>
+                            <h4 class="font-extrabold text-slate-900 text-xs">1. Chatbot Widget &lt; 20KB &amp; Meta Lead Ads Ingestion</h4>
+                        </div>
+                        <p class="text-slate-600 text-[11px] leading-relaxed">
+                            Nhúng 1 dòng script vào mọi nền tảng (WordPress, Haravan, Shopify, Odoo, React...). Tích hợp trực tiếp Meta Webhook hứng trọn Lead từ Facebook Ads mà không rơi rụng mã chiến dịch UTM.
+                        </p>
+                    </div>
+
+                    <!-- NĂNG LỰC 2 -->
+                    <div class="bg-indigo-50/50 rounded-2xl border border-indigo-200/80 p-3.5 space-y-1.5">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-base">🧠</span>
+                            <h4 class="font-extrabold text-slate-900 text-xs">2. Quản Trị Tri Thức RAG &amp; Tư Vấn Không Ảo Giác</h4>
+                        </div>
+                        <p class="text-slate-600 text-[11px] leading-relaxed">
+                            Nạp tài liệu catalogue, bảng thông số kỹ thuật, chính sách chiết khấu để AI phân tích và trả lời khách kèm bằng chứng trích dẫn (Citations). Tuyệt đối không bịa đặt thông tin kỹ thuật hay sai giá.
+                        </p>
+                    </div>
+
+                    <!-- NĂNG LỰC 3 -->
+                    <div class="bg-pink-50/50 rounded-2xl border border-pink-200/80 p-3.5 space-y-1.5">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-base">🚨</span>
+                            <h4 class="font-extrabold text-slate-900 text-xs">3. Smart Human Handoff (AI Mute) &amp; Unified Inbox</h4>
+                        </div>
+                        <p class="text-slate-600 text-[11px] leading-relaxed">
+                            Nhận diện tín hiệu mua nóng ("cần mua gấp 5 máy", "xin báo giá") &rarr; Tự động dừng bot (AI Mute) và chuyển quyền cho Sales Rep trên Hộp thư Đa kênh (Unified Inbox) để chốt deal nóng.
+                        </p>
+                    </div>
+
+                    <!-- NĂNG LỰC 4 -->
+                    <div class="bg-emerald-50/50 rounded-2xl border border-emerald-200/80 p-3.5 space-y-1.5">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-base">🎯</span>
+                            <h4 class="font-extrabold text-slate-900 text-xs">4. Identity Resolution (Customer 360 Chống Trùng)</h4>
+                        </div>
+                        <p class="text-slate-600 text-[11px] leading-relaxed">
+                            Khách chat trên Web rồi điền form Facebook? Động cơ Identity Resolution tự động gom SĐT chuẩn E.164, Email vào cùng 1 hồ sơ duy nhất, giúp Sales nắm trọn lịch sử tiếp xúc của khách.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- CÁC GÓI LẮP GHÉP LINH HOẠT (MODULAR ADD-ONS) -->
+                <div class="mt-4 space-y-2">
+                    <span class="text-xs font-extrabold text-slate-900 block">📦 MÔ HÌNH CUNG ỨNG LINH HOẠT THEO NHU CẦU THỰC TẾ CỦA KHÁCH HÀNG:</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                        <!-- GÓI 1 -->
+                        <div class="p-3.5 rounded-2xl border-2 border-purple-500 bg-purple-50/30 flex flex-col justify-between">
+                            <div>
+                                <span class="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold text-[10px] uppercase">Gói 1: AI Agent Standalone</span>
+                                <h5 class="font-extrabold text-slate-900 text-xs mt-1">AI Sales Agent Chuyên Biệt</h5>
+                                <p class="text-slate-600 text-[11px] mt-1">Dành cho doanh nghiệp ĐÃ CÓ sẵn website và hệ thống quản trị.</p>
+                                <ul class="mt-2 space-y-1 text-[11px] text-slate-700">
+                                    <li>✓ Minne Hub v0.4.0 đầy đủ tính năng</li>
+                                    <li>✓ Web Chatbot Widget nhúng 1 dòng mã</li>
+                                    <li>✓ Hộp thư đa kênh Unified Inbox</li>
+                                    <li>✓ Kết nối Webhook FB / Meta Leads</li>
+                                </ul>
+                            </div>
+                            <span class="mt-3 text-[10px] text-purple-700 font-bold block pt-2 border-t border-purple-200">Triển khai trong 24 giờ &bull; Không đổi hạ tầng</span>
+                        </div>
+
+                        <!-- GÓI 2 -->
+                        <div class="p-3.5 rounded-2xl border border-slate-200 bg-white flex flex-col justify-between">
+                            <div>
+                                <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-bold text-[10px] uppercase">Gói 2: AI + Add-on Storefront</span>
+                                <h5 class="font-extrabold text-slate-900 text-xs mt-1">AI Agent + Website Bán Hàng</h5>
+                                <p class="text-slate-600 text-[11px] mt-1">Dành cho đơn vị cần làm mới Website bán lẻ chuẩn thương mại.</p>
+                                <ul class="mt-2 space-y-1 text-[11px] text-slate-700">
+                                    <li>✓ Toàn bộ tính năng Gói 1 (AI Agent)</li>
+                                    <li>✓ <strong>+ Website Storefront bán lẻ cao cấp</strong></li>
+                                    <li>✓ Cổng tra cứu bảo hành điện tử (SĐT)</li>
+                                    <li>✓ Giỏ hàng tự tính thuế VAT tự động</li>
+                                </ul>
+                            </div>
+                            <span class="mt-3 text-[10px] text-blue-700 font-bold block pt-2 border-t border-slate-100">Bàn giao sau 3 - 5 ngày &bull; Chuẩn SEO</span>
+                        </div>
+
+                        <!-- GÓI 3 -->
+                        <div class="p-3.5 rounded-2xl border-2 border-emerald-500 bg-emerald-50/30 flex flex-col justify-between">
+                            <div>
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px] uppercase">Gói 3: All-in-One Full Combo</span>
+                                <h5 class="font-extrabold text-slate-900 text-xs mt-1">AI + Website + Odoo 19 ERP</h5>
+                                <p class="text-slate-600 text-[11px] mt-1">Giải pháp trọn gói chìa khóa trao tay cho đơn vị chuyển đổi số toàn diện.</p>
+                                <ul class="mt-2 space-y-1 text-[11px] text-slate-700">
+                                    <li>✓ AI Agent + Website Storefront</li>
+                                    <li>✓ <strong>+ Odoo 19 ERP CRM đồng bộ 2 chiều</strong></li>
+                                    <li>✓ Quản trị Báo giá, Đơn hàng, Kế toán</li>
+                                    <li>✓ Đồng bộ XML-RPC tự động &amp; Chatter</li>
+                                </ul>
+                            </div>
+                            <span class="mt-3 text-[10px] text-emerald-800 font-bold block pt-2 border-t border-emerald-200">Hệ thống hoàn chỉnh &bull; Làm chủ 100% mã nguồn</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAM KẾT CHẤT LƯỢNG & TRIỂN KHAI -->
+                <div class="mt-4 bg-slate-900 text-white rounded-2xl p-3.5 flex items-center justify-between text-xs">
+                    <div class="space-y-0.5">
+                        <span class="font-extrabold text-amber-300 block text-xs">💎 CAM KẾT DỊCH VỤ &amp; HIỆU QUẢ TỪ ALPHATECH:</span>
+                        <p class="text-slate-300 text-[11px]">Bàn giao đúng tiến độ &bull; Huấn luyện nhân viên bán hàng sử dụng thành thạo &bull; Hỗ trợ kỹ thuật 24/7 &bull; Bảo hành hệ thống trọn đời.</p>
+                    </div>
+                    <a href="https://minne.alphatech.ai.vn" target="_blank" class="shrink-0 py-2 px-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition shadow-md shadow-purple-500/30">
+                        ⚡ Trải Nghiệm Minne Live &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- FOOTER SIGN-OFF & CONTACT -->
+            <div class="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                <div class="space-y-0.5">
+                    <div class="font-extrabold text-slate-900 text-[11px]">TRUNG TÂM PHÁT TRIỂN GIẢI PHÁP AI &amp; TỰ ĐỘNG HÓA DOANH NGHIỆP</div>
+                    <div class="text-slate-500 text-[10px]">Cung ứng linh hoạt theo mọi quy mô doanh nghiệp &bull; Hotline Tư Vấn: 0988.77.66.55 &bull; Website: minne.alphatech.ai.vn</div>
+                </div>
+                <div class="flex items-center space-x-2 font-mono text-[10px]">
+                    <a href="https://minne.alphatech.ai.vn/#threads" target="_blank" class="px-2.5 py-1 bg-purple-700 text-white rounded-lg font-bold hover:bg-purple-800 transition">
+                        📥 Unified Inbox Live
+                    </a>
+                    <span class="text-slate-400">Trang 02 / 02</span>
+                </div>
+            </div>
+        </article>
+
+    </div>
+
+    <!-- INTERACTIVE VIEW TOGGLING SCRIPT -->
+    <script>
+        function switchView(mode) {
+            const p1 = document.getElementById('page-1');
+            const p2 = document.getElementById('page-2');
+            const btnBoth = document.getElementById('btn-both');
+            const btnP1 = document.getElementById('btn-p1');
+            const btnP2 = document.getElementById('btn-p2');
+
+            // Reset buttons
+            [btnBoth, btnP1, btnP2].forEach(b => {
+                b.className = 'px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition';
+            });
+
+            if (mode === 'both') {
+                p1.style.display = 'flex';
+                p2.style.display = 'flex';
+                btnBoth.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white transition';
+            } else if (mode === 'p1') {
+                p1.style.display = 'flex';
+                p2.style.display = 'none';
+                btnP1.className = 'px-3 py-1.5 rounded-lg bg-blue-600 text-white transition';
+            } else if (mode === 'p2') {
+                p1.style.display = 'none';
+                p2.style.display = 'flex';
+                btnP2.className = 'px-3 py-1.5 rounded-lg bg-purple-600 text-white transition';
+            }
+        }
+    </script>
+
+    <!-- Minne AI Sales Chatbot Widget (< 20KB) -->
+    <script 
+      src="https://minne.alphatech.ai.vn/static/widget.js" 
+      data-api-base="https://minne.alphatech.ai.vn" 
+      data-bot-name="Minne POS Advisor" 
+      data-primary-color="#6366f1" 
+      defer>
+    </script>
+</body>
+</html>
