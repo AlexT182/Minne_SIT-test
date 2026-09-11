@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Kiểm (Checklist) Module Hệ Thống Theo Phòng Ban • Odoo 19 & Minne AI Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        minne: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7e22ce',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 4px 10px -2px rgba(0, 0, 0, 0.02); }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
+        .item-checked { background-color: #f0fdf4 !important; border-color: #10b981 !important; }
+        .item-checked .badge-status { background-color: #10b981 !important; color: white !important; }
+        .item-checked h4 { text-decoration: line-through; color: #065f46 !important; }
+        @media print {
+            .no-print { display: none !important; }
+            .card-shadow { box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+    <!-- TOP STICKY BAR -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 glass no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-500/20">
+                    📋
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-sm sm:text-base leading-tight flex items-center gap-2">
+                        <span>Checklist Phân Hệ &amp; Module Nghiệp Vụ Hệ Thống</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-bold">Odoo 19 ↔ Minne v0.4.0</span>
+                    </h1>
+                    <p class="text-xs text-slate-500">Phân chia chi tiết theo 7 phòng ban / ban chuyên trách doanh nghiệp</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="SO-TAY-VAN-HANH-THUC-CHIEN-ODOO-MINNE.html" class="hidden sm:inline-flex text-xs font-semibold text-slate-600 hover:text-blue-600 transition">
+                    📖 Sổ Tay 11 Ca
+                </a>
+                <a href="index.html" class="hidden sm:inline-flex text-xs font-semibold text-slate-600 hover:text-blue-600 transition">
+                    &larr; QA Portal
+                </a>
+                <span id="overallBadge" class="text-xs font-mono font-bold px-3 py-1.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                    Tiến độ: 0/33 (0%)
+                </span>
+                <button onclick="window.print()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold transition" title="In hoặc xuất PDF">
+                    🖨️ In / PDF
+                </button>
+                <button onclick="resetAllCheckboxes()" class="text-xs text-slate-400 hover:text-red-500 transition px-2 py-1" title="Làm mới bảng kiểm">
+                    ↻ Reset
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- INTRO HERO & ENTERPRISE OVERVIEW -->
+        <section class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 rounded-3xl p-8 sm:p-10 text-white shadow-2xl relative overflow-hidden">
+            <div class="max-w-4xl space-y-3 relative z-10">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 text-cyan-300 text-xs font-mono font-bold">
+                    <span>🏢 ALPHATECH POS • HỆ THỐNG QUẢN TRỊ BÁN LẺ ĐA KÊNH &amp; AI AUTOMATION</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+                    Bảng Phân Bổ Module Hệ Thống Theo Phòng Ban &amp; Nhiệm Vụ Vận Hành
+                </h2>
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Checklist này đóng vai trò như một <strong>Ma Trận Trách Nhiệm (RACI Matrix)</strong> và <strong>Bảng Nghiệm Thu Phân Hệ</strong>. 
+                    Mỗi module được ánh xạ trực tiếp đến một phòng ban chủ quản, kèm mã định danh, mô tả trách nhiệm, tech stack kỹ thuật, endpoint API/UI và trạng thái vận hành thực tế. 
+                    Bạn có thể tích chọn từng hạng mục đã kiểm tra để theo dõi tiến độ tổng thể.
+                </p>
+            </div>
+
+            <!-- SUMMARY STATS -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/10">
+                <div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-white">7</div>
+                    <div class="text-xs text-slate-400 mt-0.5">Phòng Ban / Khối Vận Hành</div>
+                </div>
+                <div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-cyan-400">33</div>
+                    <div class="text-xs text-slate-400 mt-0.5">Module &amp; Phân Hệ Hoàn Chỉnh</div>
+                </div>
+                <div>
+                    <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400">100%</div>
+                    <div class="text-xs text-slate-400 mt-0.5">Sẵn Sàng Vận Hành (Production)</div>
+                </div>
+                <div>
+                    <div id="heroCheckedCount" class="text-2xl sm:text-3xl font-extrabold text-purple-400">0 / 33</div>
+                    <div class="text-xs text-slate-400 mt-0.5">Hạng Mục Đã Kiểm Tra</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTROLS & FILTER TABS -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-4 sm:p-6 space-y-4 no-print">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <!-- SEARCH BOX -->
+                <div class="relative flex-1 max-w-md">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
+                    <input type="text" id="searchInput" oninput="filterModules()" placeholder="Tìm module theo tên, API, tech stack (vd: XML-RPC, VAT, Handoff)..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="checkAll(true)" class="text-xs font-semibold px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition">
+                        ✓ Chọn tất cả
+                    </button>
+                    <button onclick="checkAll(false)" class="text-xs font-semibold px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition">
+                        ✗ Bỏ chọn tất cả
+                    </button>
+                </div>
+            </div>
+
+            <!-- FILTER TABS -->
+            <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-100 text-xs font-semibold">
+                <button onclick="setTab('all', this)" class="tab-btn px-3 py-1.5 rounded-xl bg-blue-600 text-white shadow-sm transition">
+                    Tất Cả (33)
+                </button>
+                <button onclick="setTab('tech', this)" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                    🛠️ Kỹ Thuật &amp; Tích Hợp (6)
+                </button>
+                <button onclick="setTab('mkt', this)" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                    🎨 Marketing &amp; Growth (5)
+                </button>
+                <button onclick="setTab('sale', this)" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                    💼 Sales &amp; Tư Vấn (5)
+                </button>
+                <button onclick="setTab('mgt', this)" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                    👔 Quản Lý Bán Hàng (5)
+                </button>
+                <button onclick="setTab('acc', this)" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                    💰 Kế Toán &amp; Bán Lẻ (5)
+                </button>
+                <button onclick="setTab('cs', this)" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                    🤝 CSKH &amp; Bảo Hành (4)
+                </button>
+                <button onclick="setTab('sec', this)" class="tab-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                    🛡️ IT &amp; Bảo Mật (3)
+                </button>
+            </div>
+        </section>
+
+        <!-- DEPARTMENT SECTIONS -->
+        <div id="moduleContainer" class="space-y-10">
+
+            <!-- 1. DEVOPS & INTEGRATION -->
+            <section class="dept-group space-y-4" data-dept="tech">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-cyan-500">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-2xl bg-cyan-100 text-cyan-700 font-bold flex items-center justify-center text-lg">🛠️</span>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">1. Phòng Kỹ Thuật &amp; Tích Hợp Hệ Thống (DevOps &amp; Integration)</h3>
+                            <p class="text-xs text-slate-500">Quản trị hạ tầng kết nối 2 chiều Odoo ERP ↔ Minne AI Hub, XML-RPC Auth, Webhook &amp; Health Monitoring</p>
+                        </div>
+                    </div>
+                    <span class="dept-badge text-xs font-mono font-bold px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200" id="badge-tech">
+                        0/6 Đạt
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- MOD-TECH-01 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="tech-1">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-TECH-01</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Khởi Tạo Bắt Tay XML-RPC Hai Chiều</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Giao tiếp chuẩn qua <code>/xmlrpc/2/common</code> &amp; <code>/xmlrpc/2/object</code>, xác thực bằng API Key chuẩn Odoo (UID: 2). Kiểm tra <code>odoo: true</code> tại <code>/health</code>.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Endpoint: <code>GET /health</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Python xmlrpc</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">FastAPI</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Odoo 19</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('tech-1', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://minne.alphatech.ai.vn/health" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Test Live &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-TECH-02 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="tech-2">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-TECH-02</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Cấu Hình Tham Số Hệ Thống Odoo</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Cấu hình bảng <code>ir.config_parameter</code> trên Odoo: <code>minne.api_url</code> = <code>https://minne.alphatech.ai.vn</code> và <code>web.base.url</code> để phát webhook.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Vị trí: <code>ir.config_parameter</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Odoo Technical</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Webhook Target</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('tech-2', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://saletemplate.alphatech.ai.vn/odoo" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Mở Odoo &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-TECH-03 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="tech-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-TECH-03</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Động Cơ Ánh Xạ Trường Dữ Liệu Động</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Cấu hình linh hoạt ánh xạ trường Lead và Báo giá giữa Minne và Odoo (<code>crm.lead</code>, <code>sale.order</code>) mà không cần lập trình lại qua API mapping.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Endpoint: <code>/api/sales/admin/mapping</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Dynamic Schema</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Pydantic</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('tech-3', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">REST API</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-TECH-04 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="tech-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-TECH-04</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Cổng Tiếp Nhận Webhook Hai Chiều</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Endpoint tiếp nhận sự kiện Webhook từ Odoo khi có thay đổi CRM lead, xác thực chữ ký và đẩy vào hàng đợi xử lý bất đồng bộ (Durable Outbox).
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Endpoint: <code>/api/sales/webhook/odoo-lead</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Async Outbox</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Idempotency</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('tech-4', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Inbound Hook</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-TECH-05 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="tech-5">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-TECH-05</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Nhúng Widget Chatbot Vào Storefront Odoo</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Nhúng script siêu nhẹ (&lt; 20KB, zero dependency, defer) vào Odoo Master Layout (<code>layout.xml</code>), tự động hiển thị bóng chat tròn nổi trên toàn bộ website.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">File: <code>web/static/widget.js</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">&lt; 20KB JS</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Odoo View Override</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('tech-5', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://saletemplate.alphatech.ai.vn" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Xem Storefront &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-TECH-06 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="tech-6">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-TECH-06</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Giám Sát Sức Khỏe Kết Nối &amp; Outbox</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Theo dõi trạng thái ổn định (healthy_since, stability_seconds), tỷ lệ retry của Outbox và cảnh báo khi mất kết nối tới máy chủ Odoo.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Endpoint: <code>/api/sales/admin/health</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">PostgreSQL</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Reliability SLA</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('tech-6', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Admin Scope</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. MARKETING & GROWTH -->
+            <section class="dept-group space-y-4" data-dept="mkt">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-purple-500">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 font-bold flex items-center justify-center text-lg">🎨</span>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">2. Phòng Marketing &amp; Tăng Trưởng (Marketing &amp; Growth)</h3>
+                            <p class="text-xs text-slate-500">Quản trị tri thức RAG, nạp catalogue sản phẩm POS, Meta Facebook Lead Ads &amp; theo dõi UTM chiến dịch</p>
+                        </div>
+                    </div>
+                    <span class="dept-badge text-xs font-mono font-bold px-3 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200" id="badge-mkt">
+                        0/5 Đạt
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- MOD-MKT-01 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mkt-1">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MKT-01</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Hệ Thống Quản Trị Tri Thức RAG &amp; Catalogue</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Nạp tài liệu catalogue máy POS T1 Pro, chính sách bảo hành 24 tháng, bóc tách vector và cung cấp câu trả lời có trích dẫn nguồn chuẩn xác (Citations).
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Menu: <code>Minne Hub &gt; Sources</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">RAG Engine</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Citations</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mkt-1', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://minne.alphatech.ai.vn" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Mở Minne Hub &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-MKT-02 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mkt-2">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MKT-02</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Cổng Tiếp Nhận Meta Lead Ads &amp; Facebook</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Kết nối Webhook chính thức với Facebook Fanpage và biểu mẫu Meta Lead Ads, tự động bóc tách họ tên, SĐT, email ngay khi khách điền form trên mạng xã hội.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Endpoint: <code>/api/channel/facebook/webhook</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Meta Graph API</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">HMAC-SHA256</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mkt-2', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Social Ads</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-MKT-03 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mkt-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MKT-03</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Đo Lường Nguồn Gốc Chiến Dịch (UTM Tracking)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Ghi nhận chính xác <code>utm_source</code>, <code>utm_medium</code>, <code>utm_campaign</code> cho từng lead từ các chiến dịch Google Ads, TikTok, Meta Ads để tính toán ROI tiếp thị.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Gateway: <code>POST /api/channel/lead</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">UTM Attribution</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">First/Last Touch</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mkt-3', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Marketing ROI</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-MKT-04 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mkt-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MKT-04</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Tùy Biến Quick Chips &amp; AI Prompt</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Cấu hình 4 nút gợi ý nhanh trên Chatbot Widget (Tư vấn dòng máy, Báo giá chuỗi, Chính sách bảo hành...) theo các sự kiện khuyến mãi mà không cần sửa code giao diện.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">File: <code>web/static/widget.js</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Prompt Tuning</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Conversion Chip</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mkt-4', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://saletemplate.alphatech.ai.vn" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Xem Widget Live &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-MKT-05 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mkt-5">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MKT-05</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Tự Động Xuất Bản Bài Viết Chuẩn SEO</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Tự động sinh nội dung truyền thông từ tri thức hệ thống và xuất bản lên chuyên mục Tin tức / Blog trên Odoo Storefront phục vụ thu hút traffic tự nhiên (SEO).
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Storefront: <code>/blog</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Odoo Blog API</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">AI Copywriting</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mkt-5', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://saletemplate.alphatech.ai.vn/blog" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Mở Odoo Blog &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. SALES & CONSULTING -->
+            <section class="dept-group space-y-4" data-dept="sale">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-blue-500">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-lg">💼</span>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">3. Phòng Kinh Doanh &amp; Tư Vấn Bán Hàng (Sales Representatives / SDR)</h3>
+                            <p class="text-xs text-slate-500">Tiếp nhận hội thoại đa kênh trên Unified Inbox, tiếp quản deal từ bot, xem hồ sơ Customer 360 &amp; chốt đơn</p>
+                        </div>
+                    </div>
+                    <span class="dept-badge text-xs font-mono font-bold px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200" id="badge-sale">
+                        0/5 Đạt
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- MOD-SALE-01 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="sale-1">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-SALE-01</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Hộp Thư Đa Kênh Tập Trung (Unified Inbox)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Giao diện tập trung gom toàn bộ tin nhắn từ Web Chatbot, Facebook Messenger, Form Landing Page. Có bộ lọc kênh, trạng thái chờ và tìm kiếm thông minh.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Menu: <code>Minne Hub &gt; /#threads</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Omnichannel UI</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Real-time List</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('sale-1', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://minne.alphatech.ai.vn/#threads" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Mở Inbox &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-SALE-02 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="sale-2">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-SALE-02</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Smart Human Handoff &amp; AI Mute Tự Động</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Tự động phát hiện tín hiệu mua nóng ("cần mua gấp", "báo giá 5 bộ", "gặp tư vấn viên") để tạm dừng AI bot và bắn cảnh báo đỏ <strong>🚨 Cần người</strong> lên màn hình Sales.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Backend: <code>app/api/chat.py</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Buying Intent</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">AI Mute Logic</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('sale-2', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Zero Spoil</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-SALE-03 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="sale-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-SALE-03</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Tiếp Quản &amp; Nhắn Tin Trực Tiếp (Staff Chat)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Nhân viên Sales gõ tin nhắn trả lời ngay tại Unified Inbox, tin nhắn lập tức hiển thị trên cửa sổ widget của khách với nhãn đại diện chuyên viên bán hàng Alphatech.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Endpoint: <code>POST /api/chat/message</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Live Chat</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Agent Badge</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('sale-3', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Staff Mode</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-SALE-04 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="sale-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-SALE-04</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Hồ Sơ Khách Hàng Customer 360 Sidebar</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Ngăn bên phải hội thoại hiển thị đầy đủ thông tin định danh: Họ tên, SĐT, Email, Kênh tiếp xúc ban đầu, UTM campaign, và các điểm chạm tương tác trước đó.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Model: <code>sales_party &amp; identity_point</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Customer 360</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Deduplication</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('sale-4', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Context View</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-SALE-05 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="sale-5">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-SALE-05</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Trợ Lý Gợi Ý Bán Hàng AI Sales Copilot</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                AI phân tích nhu cầu quán (diện tích, ngành hàng trà sữa/cafe) và đề xuất cấu hình combo thiết bị phù hợp kèm bảng so sánh giá để Sales Rep tư vấn tự tin.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Endpoint: <code>POST /api/retail/advisor</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Sales Copilot</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Combo Recommender</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('sale-5', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">AI Assist</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. SALES MANAGEMENT & OPS -->
+            <section class="dept-group space-y-4" data-dept="mgt">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-indigo-500">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-lg">👔</span>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">4. Ban Quản Lý Kinh Doanh &amp; Điều Phối (Sales Management / Operations)</h3>
+                            <p class="text-xs text-slate-500">Giám sát phễu Kanban 6 bước, quản trị SLA phản hồi &lt; 15 phút, điều phối phân bổ lead &amp; đồ thị tri thức</p>
+                        </div>
+                    </div>
+                    <span class="dept-badge text-xs font-mono font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200" id="badge-mgt">
+                        0/5 Đạt
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- MOD-MGT-01 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mgt-1">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MGT-01</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Phễu Bán Hàng Trực Quan Kanban 6 Giai Đoạn</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Quản lý luân chuyển lead qua 6 cột: <em>Mới tạo &rarr; Đã liên hệ &rarr; Đang tư vấn &rarr; Báo giá &rarr; Đàm phán &rarr; Đã chốt</em>. Hỗ trợ kéo thả cập nhật trạng thái.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Menu: <code>Minne Hub &gt; /#leads</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Kanban Board</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Drag &amp; Drop</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mgt-1', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://minne.alphatech.ai.vn/#leads" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Mở Kanban &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-MGT-02 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mgt-2">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MGT-02</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Kiểm Soát SLA Phản Hồi &lt; 15 Phút</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Động cơ Exception Engine quét tự động: Nếu lead mới phát sinh quá 15 phút chưa được nhân viên sales liên hệ sẽ đưa vào danh mục việc cần quan tâm để xử lý khẩn cấp.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Menu: <code>Minne Hub &gt; Exceptions</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">SLA Monitoring</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Lead Recovery</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mgt-2', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Exception Engine</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-MGT-03 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mgt-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MGT-03</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Điều Phối &amp; Phân Bổ Lead Tự Động</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Quản lý giao việc trực tiếp cho nhân viên phụ trách hoặc cho phép sales nhận việc (Self-claim) từ nhóm việc chung, bảo đảm mọi lead đều có người chịu trách nhiệm.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Endpoint: <code>/api/sales/leads/{id}/assign</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Auto Routing</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Self-claim Pool</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mgt-3', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Workforce Ops</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-MGT-04 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mgt-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MGT-04</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Báo Cáo Chỉ Số Kinh Doanh &amp; Chuyển Đổi</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Dashboard phân tích số lượng lead đa kênh, tỷ lệ chuyển đổi chốt deal, thời gian phản hồi trung bình và tỷ lệ vi phạm SLA theo thời gian thực.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Menu: <code>Minne Hub &gt; /#today</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Sales Digest</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Conversion Funnel</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mgt-4', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://minne.alphatech.ai.vn/#today" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Xem Chỉ Số &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-MGT-05 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="mgt-5">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-MGT-05</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Bản Đồ Tri Thức Mối Quan Hệ (Graph 60FPS)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Đồ thị mạng trực quan tương tác 60FPS hiển thị mối liên kết giữa khách hàng, dòng máy POS, chính sách giá và tài liệu kỹ thuật hỗ trợ quyết định kinh doanh.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Menu: <code>Minne Hub &gt; /#graph</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Knowledge Graph</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">60FPS Canvas</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('mgt-5', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://minne.alphatech.ai.vn/#graph" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Mở Đồ Thị &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. ACCOUNTING & RETAIL OPS -->
+            <section class="dept-group space-y-4" data-dept="acc">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-amber-500">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 font-bold flex items-center justify-center text-lg">💰</span>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">5. Phòng Kế Toán &amp; Vận Hành Bán Lẻ (Accounting &amp; Retail Operations)</h3>
+                            <p class="text-xs text-slate-500">Đồng bộ Odoo CRM Lead, khung Chatter, tạo báo giá sale.order, tính thuế VAT 15% tự động &amp; quản lý bảng giá</p>
+                        </div>
+                    </div>
+                    <span class="dept-badge text-xs font-mono font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200" id="badge-acc">
+                        0/5 Đạt
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- MOD-ACC-01 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="acc-1">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-ACC-01</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Đồng Bộ Hai Chiều Odoo CRM Lead</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Tự động tạo bản ghi trên model <code>crm.lead</code> của Odoo với đầy đủ tên đối tác, SĐT chuẩn E.164, email và mô tả nhu cầu cấu hình thiết bị.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Odoo Model: <code>crm.lead</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Odoo XML-RPC</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">2-Way Sync</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('acc-1', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://saletemplate.alphatech.ai.vn/odoo/crm" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Mở Odoo CRM &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-ACC-02 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="acc-2">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-ACC-02</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Ghi Nhật Ký Trao Đổi Vào Odoo Chatter</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Lịch sử tư vấn của Chatbot và tin nhắn của Sales Rep được đẩy tự động vào khung trao đổi (Chatter / <code>mail.message</code>) của Lead, giúp kế toán nắm rõ thỏa thuận giá.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Odoo Model: <code>mail.message</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Odoo Chatter</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Unicode UTF-8</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('acc-2', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Audit Trail</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-ACC-03 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="acc-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-ACC-03</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Tạo Báo Giá &amp; Đơn Hàng Bán Lẻ (Sale Order)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Chuyển đổi một chạm từ CRM Lead sang Báo giá (Quotation / <code>sale.order</code>), tự động nạp các dòng sản phẩm máy POS, máy in hóa đơn và áp dụng bảng giá ưu đãi.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Odoo Model: <code>sale.order</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Quotation</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Order Line</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('acc-3', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Order Creation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-ACC-04 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="acc-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-ACC-04</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Tự Động Tính Thuế VAT 15% Tại Giỏ Hàng</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Kiểm tra cơ chế tự động cộng thuế VAT 15% (1.275.000 ₫ cho máy 8.500.000 ₫) tại giỏ hàng <code>/shop/cart</code> và in hóa đơn tài chính chuẩn Odoo.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Storefront: <code>/shop/cart</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">VAT 15%</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Fiscal Rules</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('acc-4', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://saletemplate.alphatech.ai.vn/shop/cart" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Mở Giỏ Hàng &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-ACC-05 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="acc-5">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-ACC-05</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Bảng Giá &amp; Chiết Khấu Combo Chuỗi Đại Lý</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Quản trị bảng giá phân cấp B2B / B2C (<code>product.pricelist</code>): Áp dụng tự động chiết khấu 12% khi đặt hàng số lượng lớn cho chuỗi cafe, trà sữa.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Odoo Model: <code>product.pricelist</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Pricelist Engine</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">B2B Discounts</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('acc-5', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Pricing Policy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. CS & WARRANTY SUPPORT -->
+            <section class="dept-group space-y-4" data-dept="cs">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-teal-500">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-2xl bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-lg">🤝</span>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">6. Phòng Chăm Sóc Khách Hàng &amp; Hậu Mãi (Customer Service &amp; Warranty)</h3>
+                            <p class="text-xs text-slate-500">Cổng tra cứu tự phục vụ theo SĐT không cần mật khẩu, bảo hành điện tử 24 tháng &amp; tái chăm sóc sau bán</p>
+                        </div>
+                    </div>
+                    <span class="dept-badge text-xs font-mono font-bold px-3 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200" id="badge-cs">
+                        0/4 Đạt
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- MOD-CS-01 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="cs-1">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-CS-01</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Cổng Tra Cứu Đơn Hàng Tự Phục Vụ</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Khách hàng tự tra cứu tình trạng đơn hàng bằng SĐT tại <code>/tra-cuu</code> không cần đăng nhập mật khẩu, giảm 70% cuộc gọi đến tổng đài viên.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Storefront: <code>/tra-cuu</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Passwordless</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Self-Service</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('cs-1', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <a href="https://saletemplate.alphatech.ai.vn/tra-cuu" target="_blank" class="text-blue-600 hover:underline font-bold text-[11px]">Tra Cứu Live &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-CS-02 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="cs-2">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-CS-02</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Kích Hoạt Bảo Hành Điện Tử 24 Tháng</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Tự động gán huy hiệu và ngày hết hạn bảo hành chính hãng 24 tháng cho mọi sản phẩm POS bán ra, cho phép tra cứu trạng thái bảo hành tức thì.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Odoo View: <code>warranty_badge</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">E-Warranty</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">24 Months</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('cs-2', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Post-Sales</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-CS-03 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="cs-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-CS-03</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Hợp Nhất Danh Tính Chống Trùng Khách</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Động cơ Identity Resolution tự động gom SĐT, Facebook PSID, Zalo ID của cùng 1 người vào mã <code>sales_party</code> duy nhất, không tạo trùng lead rác.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Model: <code>sales_identity_point</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Identity Resolution</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">E.164 Cleanse</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('cs-3', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Data Quality</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-CS-04 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="cs-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-CS-04</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Nhắc Lịch Bảo Trì &amp; Tái Chăm Sóc Sau Bán</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Tự động lên lịch nhắc nhân viên CSKH hỏi thăm tình hình sử dụng máy POS sau 30 ngày mở quán và đề xuất bổ sung giấy in nhiệt, máy quét mã vạch.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Worker: <code>app/worker.py</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Cron Schedule</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Re-engagement</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('cs-4', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Retention</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. IT & SECURITY -->
+            <section class="dept-group space-y-4" data-dept="sec">
+                <div class="flex items-center justify-between pb-3 border-b-2 border-emerald-500">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-lg">🛡️</span>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">7. Ban Quản Trị Hệ Thống &amp; An Toàn Dữ Liệu (Enterprise IT &amp; Security)</h3>
+                            <p class="text-xs text-slate-500">Phân quyền vai trò 3 cấp (RBAC), cách ly dữ liệu Multi-Tenant (RLS Scope), nhật ký kiểm toán &amp; sao lưu</p>
+                        </div>
+                    </div>
+                    <span class="dept-badge text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="badge-sec">
+                        0/3 Đạt
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- MOD-SEC-01 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="sec-1">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-SEC-01</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Phân Quyền Vai Trò 3 Cấp Nghiệp Vụ (RBAC)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Kiểm soát quyền truy cập chặt chẽ giữa 3 cấp: Quản trị viên (Admin), Trưởng phòng (Manager), và Nhân viên (Sales Rep / Marketer). Bảo vệ mọi API bằng Token.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Router: <code>app/api/auth.py</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">JWT Session</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">3-Tier RBAC</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('sec-1', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Access Control</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-SEC-02 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="sec-2">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-SEC-02</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Cách Ly Multi-Tenant Tuyệt Đối (RLS Scope)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Toàn bộ câu truy vấn cơ sở dữ liệu đều bắt buộc ràng buộc <code>workspace_id</code>, bảo đảm dữ liệu của doanh nghiệp này tuyệt đối không bị lộ sang doanh nghiệp khác.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Core: <code>app/db/session.py</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Row-Level Security</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Multi-Tenant</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('sec-2', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Tenant Isolation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MOD-SEC-03 -->
+                    <div class="module-card bg-white rounded-2xl border border-slate-200 card-shadow p-5 flex flex-col justify-between space-y-3 transition" data-id="sec-3">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">MOD-SEC-03</span>
+                                <span class="badge-status text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">LIVE / READY</span>
+                            </div>
+                            <h4 class="font-bold text-slate-900 text-sm">Nhật Ký Kiểm Toán &amp; Sao Lưu Dữ Liệu An Toàn</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Lưu vết nhật ký toàn bộ hành vi gán lead, đổi trạng thái giá, ghi log Chatter kèm dấu thời gian chuẩn ISO 8601. Dữ liệu sao lưu tự động hàng ngày trên PostgreSQL 16.
+                            </p>
+                        </div>
+                        <div class="space-y-2 pt-2 border-t border-slate-100 text-[11px]">
+                            <div class="mono text-slate-500 truncate">Database: <code>PostgreSQL 16 WAL</code></div>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Audit Log</span>
+                                <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Automated Backup</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" onchange="toggleModule('sec-3', this)" class="w-4 h-4 text-emerald-600 rounded">
+                                    <span class="text-xs font-semibold text-slate-700">Đã kiểm tra</span>
+                                </label>
+                                <span class="mono text-[10px] text-slate-400">Data Protection</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- FOOTER SIGN-OFF -->
+        <section class="bg-white rounded-3xl border border-slate-200 card-shadow p-8 flex flex-col md:flex-row items-center justify-between gap-6 no-print">
+            <div class="space-y-1 text-center md:text-left">
+                <h4 class="text-base font-bold text-slate-900">Sẵn Sàng Nghiệm Thu Phân Hệ Doanh Nghiệp Toàn Diện</h4>
+                <p class="text-xs text-slate-500">Mọi module đã được phân định trách nhiệm rõ ràng theo phòng ban và liên kết trực tiếp với các tài liệu kỹ thuật kiểm thử.</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <a href="SO-TAY-VAN-HANH-THUC-CHIEN-ODOO-MINNE.html" class="py-2.5 px-5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                    📖 Xem Sổ Tay 11 Ca &rarr;
+                </a>
+                <a href="index.html" class="py-2.5 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-md shadow-blue-500/20">
+                    Mở QA Portal Hub &rarr;
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-xs text-slate-400 border-t border-slate-200">
+        Alphatech Automation Platform &bull; Bảng Phân Bổ Module Hệ Thống Theo Phòng Ban &bull; Odoo 19 & Minne AI Hub v0.4.0
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT -->
+    <script>
+        const TOTAL_MODULES = 33;
+        const DEPT_TOTALS = {
+            'tech': 6,
+            'mkt': 5,
+            'sale': 5,
+            'mgt': 5,
+            'acc': 5,
+            'cs': 4,
+            'sec': 3
+        };
+
+        function getStorageKey() {
+            return 'minne_module_checklist_v1';
+        }
+
+        function getCheckedState() {
+            try {
+                return JSON.parse(localStorage.getItem(getStorageKey()) || '{}');
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveCheckedState(state) {
+            localStorage.setItem(getStorageKey(), JSON.stringify(state));
+        }
+
+        function toggleModule(id, chk) {
+            const state = getCheckedState();
+            state[id] = chk.checked;
+            saveCheckedState(state);
+            applyItemUI(id, chk.checked);
+            updateCounters();
+        }
+
+        function applyItemUI(id, isChecked) {
+            const card = document.querySelector(`.module-card[data-id="${id}"]`);
+            if (card) {
+                if (isChecked) {
+                    card.classList.add('item-checked');
+                } else {
+                    card.classList.remove('item-checked');
+                }
+            }
+        }
+
+        function updateCounters() {
+            const state = getCheckedState();
+            let totalChecked = 0;
+            const deptCounts = { 'tech': 0, 'mkt': 0, 'sale': 0, 'mgt': 0, 'acc': 0, 'cs': 0, 'sec': 0 };
+
+            for (const [id, isChecked] of Object.entries(state)) {
+                if (isChecked) {
+                    totalChecked++;
+                    const dept = id.split('-')[0];
+                    if (deptCounts[dept] !== undefined) deptCounts[dept]++;
+                }
+            }
+
+            const pct = Math.round((totalChecked / TOTAL_MODULES) * 100);
+            const badge = document.getElementById('overallBadge');
+            badge.innerText = `Tiến độ: ${totalChecked}/${TOTAL_MODULES} (${pct}%)`;
+            if (totalChecked === TOTAL_MODULES) {
+                badge.className = 'text-xs font-mono font-bold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+            } else {
+                badge.className = 'text-xs font-mono font-bold px-3 py-1.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200';
+            }
+
+            const heroCount = document.getElementById('heroCheckedCount');
+            if (heroCount) heroCount.innerText = `${totalChecked} / ${TOTAL_MODULES}`;
+
+            for (const [dept, total] of Object.entries(DEPT_TOTALS)) {
+                const badgeEl = document.getElementById(`badge-${dept}`);
+                if (badgeEl) {
+                    badgeEl.innerText = `${deptCounts[dept]}/${total} Đạt`;
+                    if (deptCounts[dept] === total) {
+                        badgeEl.className = 'dept-badge text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+                    }
+                }
+            }
+        }
+
+        function checkAll(value) {
+            const state = {};
+            document.querySelectorAll('.module-card').forEach(card => {
+                const id = card.getAttribute('data-id');
+                const chk = card.querySelector('input[type="checkbox"]');
+                if (chk) chk.checked = value;
+                state[id] = value;
+                applyItemUI(id, value);
+            });
+            saveCheckedState(state);
+            updateCounters();
+        }
+
+        function resetAllCheckboxes() {
+            if (confirm('Bạn có chắc muốn làm mới toàn bộ tiến độ kiểm tra (về 0/33 module)?')) {
+                localStorage.removeItem(getStorageKey());
+                document.querySelectorAll('.module-card input[type="checkbox"]').forEach(chk => chk.checked = false);
+                document.querySelectorAll('.module-card').forEach(card => card.classList.remove('item-checked'));
+                updateCounters();
+            }
+        }
+
+        function setTab(dept, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.className = 'tab-btn px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition';
+            });
+            btn.className = 'tab-btn px-3 py-1.5 rounded-xl bg-blue-600 text-white shadow-sm transition';
+
+            document.querySelectorAll('.dept-group').forEach(group => {
+                if (dept === 'all' || group.getAttribute('data-dept') === dept) {
+                    group.style.display = 'block';
+                } else {
+                    group.style.display = 'none';
+                }
+            });
+        }
+
+        function filterModules() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            document.querySelectorAll('.module-card').forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (!query || text.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        window.onload = function() {
+            const state = getCheckedState();
+            document.querySelectorAll('.module-card').forEach(card => {
+                const id = card.getAttribute('data-id');
+                const chk = card.querySelector('input[type="checkbox"]');
+                if (state[id]) {
+                    if (chk) chk.checked = true;
+                    card.classList.add('item-checked');
+                }
+            });
+            updateCounters();
+        };
+    </script>
+
+    <!-- Minne AI Sales Chatbot Widget (< 20KB) -->
+    <script 
+      src="https://minne.alphatech.ai.vn/static/widget.js" 
+      data-api-base="https://minne.alphatech.ai.vn" 
+      data-bot-name="Minne POS Advisor" 
+      data-primary-color="#6366f1" 
+      defer>
+    </script>
+</body>
+</html>
